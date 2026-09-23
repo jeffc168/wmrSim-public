@@ -28,10 +28,14 @@ python3 -m pip install --break-system-packages wmr_sim_sdk-1.0.0-py3-none-any.wh
 source /opt/ros/jazzy/setup.bash   # 核心已安裝時
 ```
 
-或於原始碼樹直接使用：
+或直接使用 SDK 原始碼（不需核心）。於 repo 根目錄執行：
 
 ```bash
+# 公開 SDK repo 佈局（sdk/wmr_sim/...）
 export PYTHONPATH="$PWD/sdk:$PYTHONPATH"
+
+# 或開發者完整原始碼樹佈局（src/wmr_sim/wmr_sim/...）
+# export PYTHONPATH="$PWD/src/wmr_sim:$PYTHONPATH"
 ```
 
 ## 驗證範例（建議先做）

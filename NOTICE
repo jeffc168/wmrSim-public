@@ -40,6 +40,34 @@ Version: V1.0
    License: Eclipse Public License 2.0 / Eclipse Distribution License 1.0
 
 ------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+9. 隨附之第三方 ROS 2 套件（vendored，位於 src/）
+
+   dwb_core / dwb_critics / dwb_plugins       BSD-3-Clause
+       Copyright (c) Willow Garage, Inc. / Locus Robotics / Samsung Research
+       Upstream: https://github.com/ros-navigation/navigation2 (jazzy)
+
+   costmap_converter / costmap_converter_msgs  BSD-3-Clause
+       Copyright (c) TU Dortmund - Institute of Control Theory and
+       Systems Engineering
+       Upstream: https://github.com/rst-tu-dortmund/costmap_converter (0.1.2)
+
+   teb_local_planner                           BSD-3-Clause
+   teb_msgs                                    Apache-2.0
+       Copyright (c) TU Dortmund - Institute of Control Theory and
+       Systems Engineering
+       Upstream: https://github.com/rst-tu-dortmund/teb_local_planner (ros2-master)
+
+   完整清單、精確版本、著作權人與在地可攜性補丁說明，見
+   release-tools/third_party/THIRD_PARTY.md。
+   各套件目錄內均附 LICENSE；授權全文另存於 THIRD_PARTY bundle 之 LICENSES/。
+   這些套件依其原始授權散布，未被重新授權為 Proprietary。
+
+   一鍵取得（公開）：
+       bash tools/fetch_third_party.sh --check
+       bash tools/fetch_third_party.sh --all
+
+------------------------------------------------------------------------------
 備註：第三方元件授權清單以其上游發行版本為準。若被授權方之商業合約另有
 約定，從其約定。PyQt5 若以 GPL v3 版本使用，被授權方須自行評估其散布
 合規性；商業散布建議採用 Qt 商業授權。

@@ -1,12 +1,7 @@
-"""Build script for the standalone wmrSim Plugin SDK.
+"""Setup script for standalone wmr-sim-sdk distribution.
 
-Copyright (C) 2026 宇集創新科技. All Rights Reserved.
-
-Usage::
-
-    python3 -m pip install --break-system-packages build
-    python3 -m build --wheel
-    python3 -m pip install --break-system-packages dist/*.whl
+Allows building the customer SDK as an independent Python Wheel / package
+without exposing the proprietary core simulation engine.
 """
 
 from setuptools import setup
@@ -18,14 +13,19 @@ setup(
     long_description=(
         "Customer Plugin SDK for developing custom Global Planners, Local "
         "Controllers, Traffic Managers and Task Managers on the wmrSim "
-        "platform. Contains only the public plugin interface; the proprietary "
-        "simulation core is distributed separately.\n\n"
+        "platform. This package contains only the public plugin interface; "
+        "the proprietary simulation core is distributed separately.\n\n"
         "Copyright (C) 2026 宇集創新科技. All Rights Reserved."
     ),
     author="宇集創新科技",
-    packages=["wmr_sim", "wmr_sim.sdk"],
+    author_email="support@yujitech.example",
+    license="Proprietary",
+    packages=["wmr_sim.sdk"],
+    package_dir={"wmr_sim.sdk": "src/wmr_sim/wmr_sim/sdk"},
     python_requires=">=3.10",
-    install_requires=["numpy"],
+    install_requires=[
+        "numpy",
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: POSIX :: Linux",
