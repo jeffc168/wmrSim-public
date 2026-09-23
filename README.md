@@ -4,7 +4,7 @@
 
 Copyright (C) 2026 宇集創新科技. All Rights Reserved. Release V1.0
 
-[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](#授權)
+[![License: GPL-3.0 with Exception](https://img.shields.io/badge/License-GPL--3.0--Exception-blue.svg)](#授權與社群規範)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![ROS 2 Jazzy](https://img.shields.io/badge/ROS%202-Jazzy-22314E.svg)](https://docs.ros.org/en/jazzy/)
 
@@ -224,19 +224,19 @@ cd ~/my_ws && colcon build --symlink-install
 > 並保存於 `~/my_ws/third_party_LICENSES/`。
 > 完整來源、精確版本與在地補丁清單見 [`THIRD_PARTY.md`](THIRD_PARTY.md)。
 
----
+## 授權與社群規範 (License & Community)
 
-## 授權
+本公開倉庫（Plugin SDK 與範例演算法）依據 **GNU General Public License v3.0 (GPL-3.0)** 搭配 **宇集外掛動態載入例外條款 (Plugin Linking Exception)** 授權釋出。
 
-本 SDK 為專有軟體（Proprietary），著作權屬 **宇集創新科技** 所有。
+### 1. 插件開源與後續開發義務 (Reciprocal Copyleft)
+- 任何基於本 SDK 開發、擴充或衍生之外掛演算法（包含 Global Planner、Local Controller、Traffic Manager、Task Manager 等），**在散布、交付或提供給他人使用時，依法必須以 GPLv3（或後續版本）完整開源其原始碼**。
+- 不得以任何閉源或專有形式發行衍生外掛，確保社群改進能持續回饋與共享。
 
-本 repo 內之 `patches/`、`LICENSES/`、`THIRD_PARTY.md` 係為散布第三方
-元件所需之合規文件；該等第三方元件之著作權歸其各自權利人所有。
+### 2. 商業核心與 GUI 隔離保護宣告 (Plugin Linking Exception)
+- 宇集創新科技官方發行之 **wmrSim 商業模擬核心引擎**（`ros-jazzy-wmr-sim-core`）與 **GUI 視覺化介面**（PyQt5 3D Desktop GUI、Web Dashboard）為獨立之專有商業軟體，**不在此公開 repo 中**。
+- 宇集核心與 GUI 享有明確的 **Plugin Linking Exception** 豁免授權：核心動態加載依本 SDK 開發之 GPLv3 插件，**不構成衍生著作，核心與 GUI 100% 保持商業閉源專有**。
+- 嚴格禁止對商業核心二進位檔案進行逆向工程、反向編譯或反組譯。
 
-- **客戶外掛智財權**：你基於本 repo 公開介面所開發的演算法外掛，
-  其智慧財產權**完全歸屬於你**。
-- 禁止對核心二進位檔案進行逆向工程、反向編譯或反組譯。
-- 完整條款見 [`LICENSE`](LICENSE) 與 [`EULA.md`](EULA.md)；
-  第三方元件見 [`NOTICE`](NOTICE)。
+完整條款見 [`LICENSE`](LICENSE)；第三方套件宣告見 [`NOTICE`](NOTICE) 與 [`THIRD_PARTY.md`](THIRD_PARTY.md)。
 
 Copyright (C) 2026 宇集創新科技. All Rights Reserved.

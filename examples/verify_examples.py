@@ -2,13 +2,14 @@
 """Self-verification runner for the wmrSim SDK sample plugins.
 
 Copyright (C) 2026 宇集創新科技. All Rights Reserved.
+Licensed under GNU General Public License v3.0 with Plugin Linking Exception.
 
 用途：確認範例外掛與已安裝之 SDK 契約一致，並通過 PluginVerifier 的
 介面／延遲檢驗。可作為客戶開發自有外掛時的參考測試骨架。
 
 執行::
 
-    python3 verify_examples.py            # 需先安裝 wmr_sim SDK / 核心
+    python3 verify_examples.py            # 自動尋找本機 SDK 或已安裝之套件
     python3 verify_examples.py --plain    # 使用同目錄範例，不依賴套件內建範例
 """
 
@@ -20,6 +21,11 @@ import sys
 from typing import Any, Tuple
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+# 自動適應：優先使用同 repo 下的 sdk/ 目錄（免先安裝 wheel 即可直接驗證）
+SDK_DIR = HERE.parent / "sdk"
+if SDK_DIR.exists() and str(SDK_DIR) not in sys.path:
+    sys.path.insert(0, str(SDK_DIR))
 
 SAMPLES = (
     ("custom_astar_planner.py", "CustomerAStarPlanner", "verify_global_planner"),
@@ -42,7 +48,7 @@ def main() -> int:
         from wmr_sim.sdk.dataclasses import (OccupancyGridData, Pose2D, Velocity2D)
     except Exception as exc:  # pragma: no cover
         print(f"[FAIL] 無法匯入 wmr_sim.sdk: {exc}")
-        print("       請先安裝核心 .deb 與 SDK wheel，並 source /opt/ros/jazzy/setup.bash")
+        print("       請先安裝核心 .deb 或 SDK wheel，並 source /opt/ros/jazzy/setup.bash")
         return 2
 
     failures = 0

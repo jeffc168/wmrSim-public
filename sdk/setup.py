@@ -15,13 +15,13 @@ setup(
         "Controllers, Traffic Managers and Task Managers on the wmrSim "
         "platform. This package contains only the public plugin interface; "
         "the proprietary simulation core is distributed separately.\n\n"
-        "Copyright (C) 2026 宇集創新科技. All Rights Reserved."
+        "Copyright (C) 2026 宇集創新科技. All Rights Reserved.\n"
+        "Licensed under GNU General Public License v3.0 with Plugin Linking Exception."
     ),
     author="宇集創新科技",
     author_email="support@yujitech.example",
-    license="Proprietary",
-    packages=["wmr_sim.sdk"],
-    package_dir={"wmr_sim.sdk": "src/wmr_sim/wmr_sim/sdk"},
+    license="GPL-3.0-or-later WITH Plugin-Linking-Exception",
+    packages=["wmr_sim", "wmr_sim.sdk"],
     python_requires=">=3.10",
     install_requires=[
         "numpy",
@@ -30,6 +30,6 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: POSIX :: Linux",
         "Topic :: Scientific/Engineering :: Robotics",
-        "License :: Other/Proprietary License",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     ],
 )

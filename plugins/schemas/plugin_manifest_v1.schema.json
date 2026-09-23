@@ -20,7 +20,8 @@
       "description": "Semantic versioning (e.g. 1.0.0)"
     },
     "plugin_type": {
-      "enum": ["GLOBAL_PLANNER", "LOCAL_CONTROLLER", "TRAFFIC_MANAGER", "TASK_MANAGER"],
+      "enum": ["GLOBAL_PLANNER", "LOCAL_CONTROLLER", "TRAFFIC_MANAGER", "TASK_MANAGER",
+               "FACILITY_DEVICE", "CARGO_PROVIDER", "MAP_PROVIDER", "TELEMETRY_EXPORTER"],
       "description": "Category of the algorithm plugin"
     },
     "entrypoint": {
@@ -47,7 +48,14 @@
           "MULTI_FLOOR_ROUTING",
           "ROLLING_LEASE",
           "TASK_ASSIGNMENT",
-          "RECIPROCAL_AVOIDANCE"
+          "RECIPROCAL_AVOIDANCE",
+          "ELEVATOR_TRANSFER",
+          "ACTUATED_DOOR",
+          "BARRIER_CONTROL",
+          "CONVEYOR_TRANSFER",
+          "BARCODE_SCAN",
+          "RFID_SCAN",
+          "VISION_IDENTITY"
         ]
       }
     },

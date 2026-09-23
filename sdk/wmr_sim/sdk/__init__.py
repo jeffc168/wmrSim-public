@@ -2,12 +2,13 @@
 
 公開之外掛開發介面（Open Plugin API）。
 Copyright (C) 2026 宇集創新科技. All Rights Reserved.
+Licensed under GNU General Public License v3.0 with Plugin Linking Exception.
 Version: V1.0
 """
 
 __version__ = "1.0.0"
 __copyright__ = "Copyright (C) 2026 宇集創新科技. All Rights Reserved."
-__license__ = "Proprietary (Customer plugin IP belongs to the customer)"
+__license__ = "GPL-3.0-or-later WITH Plugin-Linking-Exception"
 
 from .dataclasses import (
     Pose2D,
@@ -65,4 +66,3 @@ __all__ = [
     "PluginDiscoverer",
     "RESOURCE_INDEX_CATEGORY",
 ]
-

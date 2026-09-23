@@ -6,17 +6,15 @@ Copyright (C) 2026 宇集創新科技. All Rights Reserved.
 
 Release Version : V1.0
 Release Build   : 1.0.0
-Product Edition : 開放插件版 / Plugin-Open Runtime Edition
+Product Edition : 開放插件版 / Plugin SDK Edition
 
 本檔案為軟體著作權宣告（Copyright Notice）。依中華民國著作權法及
-國際著作權公約，本軟體之著作權、營業秘密及其他一切智慧財產權均歸屬
-宇集創新科技所有。
+國際著作權公約，本軟體 SDK 之著作權均歸屬宇集創新科技所有。
 
-未經宇集創新科技事前書面同意，任何人不得：
-  1. 重製、散布、出租、轉授權或公開傳輸本軟體之核心二進位套件。
-  2. 對本軟體之任何二進位檔案（.pyc／.so／.deb）進行逆向工程、
-     反向編譯（Decompilation）、反組譯（Disassembly）或萃取原始碼。
-  3. 移除、遮蔽或變更本軟體任一檔案中之著作權宣告、商標或專有權標記。
+本公開倉庫（wmrSim Plugin SDK）依 GNU General Public License v3.0 (GPL-3.0)
+搭配宇集外掛動態載入例外條款（Plugin Linking Exception）釋出：
 
-客戶依官方公開之 wmr_sim.sdk 介面所自行開發之演算法外掛，其智慧財產權
-歸屬於客戶，詳見 LICENSE 與 docs/EULA.md。
+  1. 任何人基於本 SDK 衍生開發之外掛演算法，散布時依法必須以 GPLv3 完整開源。
+  2. 宇集商業模擬核心（wmr-sim-core）與 GUI 享有 Linking Exception 豁免權，
+     動態載入此等開源插件不使核心開源，核心維持 100% 商業專有。
+  3. 嚴格禁止對核心二進位檔案（.so／.deb）進行逆向工程、反向編譯或反組譯。
