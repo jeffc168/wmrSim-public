@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wmr_sim.plugin.registration/v1",
+  "type": "object",
+  "required": ["request_id", "action", "plugin"],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "action": {
+      "enum": ["register", "unregister", "query"]
+    },
+    "plugin": {
+      "$ref": "wmr_sim.plugin.manifest/v1"
+    },
+    "runtime_endpoint": {
+      "type": "object",
+      "properties": {
+        "transport": {"enum": ["ros2_service", "ros2_action", "ros2_topic", "rest_rpc", "in_process"]},
+        "endpoint_name": {"type": "string"},
+        "node_name": {"type": "string"}
+      }
+    }
+  }
+}

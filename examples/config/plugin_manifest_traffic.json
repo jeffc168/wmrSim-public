@@ -1,0 +1,45 @@
+{
+  "plugin_id": "customer_traffic",
+  "name": "Customer Keep-Right Traffic Manager",
+  "version": "1.0.0",
+  "plugin_type": "TRAFFIC_MANAGER",
+  "entrypoint": "custom_traffic_manager:CustomerTrafficManager",
+  "author": "Partner AGV Team",
+  "description": "靠右通行 + 直行優先的示範交管演算法（輸出 pass_side / yield_to / encounter_type）",
+  "capabilities": [
+    "TIME_SCHEDULED_ROUTING",
+    "RECIPROCAL_AVOIDANCE"
+  ],
+  "parameters": [
+    {
+      "name": "detection_range_m",
+      "type": "float",
+      "default": 6.0,
+      "description": "衝突偵測距離 (m)",
+      "min_value": 1.0,
+      "max_value": 30.0
+    },
+    {
+      "name": "corridor_half_angle_deg",
+      "type": "float",
+      "default": 60.0,
+      "description": "前方走廊半角（度）",
+      "min_value": 10.0,
+      "max_value": 90.0
+    },
+    {
+      "name": "yield_duration_sec",
+      "type": "float",
+      "default": 1.5,
+      "description": "讓路等待時間 (s)，對應 dispatch_after",
+      "min_value": 0.0,
+      "max_value": 30.0
+    },
+    {
+      "name": "keep_right",
+      "type": "bool",
+      "default": true,
+      "description": "是否採靠右通行"
+    }
+  ]
+}

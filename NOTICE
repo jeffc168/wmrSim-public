@@ -1,0 +1,47 @@
+wmrSim 第三方元件聲明 (Third-Party Notices)
+Copyright (C) 2026 宇集創新科技. All Rights Reserved.
+Version: V1.0
+
+本軟體包含或執行時依賴下列第三方元件。各元件之著作權歸其各自權利人所
+有，並依其原始授權條款提供。
+
+------------------------------------------------------------------------------
+1. ROS 2 Jazzy Jalisco (rclpy, rcl, rmw, std_msgs, geometry_msgs, nav_msgs,
+   sensor_msgs, nav2_msgs, tf2_ros, ament_*)
+   Copyright (c) Open Source Robotics Foundation, Inc.
+   License: Apache License 2.0
+
+2. Nav2 (navigation2, nav2_bringup, nav2_msgs, nav2_amcl, nav2_costmap_2d)
+   Copyright (c) Open Source Robotics Foundation / Nav2 Contributors
+   License: Apache License 2.0
+
+3. DWB / dwb_core / dwb_critics / dwb_plugins / costmap_converter
+   Copyright (c) Willow Garage / ROS Navigation contributors
+   License: BSD-3-Clause / Apache License 2.0
+
+4. TEB Local Planner (teb_local_planner, teb_msgs)
+   Copyright (c) TU Dortmund University
+   License: BSD-3-Clause
+
+5. Qt / PyQt5
+   Copyright (c) The Qt Company Ltd. / Riverbank Computing
+   License: GPL v3 / Commercial (PyQt5)
+
+6. NumPy, SciPy
+   Copyright (c) NumPy / SciPy Developers
+   License: BSD-3-Clause
+
+7. PyYAML
+   Copyright (c) PyYAML Contributors
+   License: MIT
+
+8. CycloneDDS (rmw_cyclonedds)
+   Copyright (c) Eclipse Foundation / ZettaScale Technology
+   License: Eclipse Public License 2.0 / Eclipse Distribution License 1.0
+
+------------------------------------------------------------------------------
+備註：第三方元件授權清單以其上游發行版本為準。若被授權方之商業合約另有
+約定，從其約定。PyQt5 若以 GPL v3 版本使用，被授權方須自行評估其散布
+合規性；商業散布建議採用 Qt 商業授權。
+
+Copyright (C) 2026 宇集創新科技. All Rights Reserved.

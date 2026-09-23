@@ -1,0 +1,22 @@
+wmrSim — 企業級多機器人模擬與智慧車隊調度平台
+wmrSim — Enterprise Multi-AMR Simulation & Fleet Coordination Platform
+
+Copyright (C) 2026 宇集創新科技. All Rights Reserved.
+版權所有 © 2026 宇集創新科技
+
+Release Version : V1.0
+Release Build   : 1.0.0
+Product Edition : 開放插件版 / Plugin-Open Runtime Edition
+
+本檔案為軟體著作權宣告（Copyright Notice）。依中華民國著作權法及
+國際著作權公約，本軟體之著作權、營業秘密及其他一切智慧財產權均歸屬
+宇集創新科技所有。
+
+未經宇集創新科技事前書面同意，任何人不得：
+  1. 重製、散布、出租、轉授權或公開傳輸本軟體之核心二進位套件。
+  2. 對本軟體之任何二進位檔案（.pyc／.so／.deb）進行逆向工程、
+     反向編譯（Decompilation）、反組譯（Disassembly）或萃取原始碼。
+  3. 移除、遮蔽或變更本軟體任一檔案中之著作權宣告、商標或專有權標記。
+
+客戶依官方公開之 wmr_sim.sdk 介面所自行開發之演算法外掛，其智慧財產權
+歸屬於客戶，詳見 LICENSE 與 docs/EULA.md。

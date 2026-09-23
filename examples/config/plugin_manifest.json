@@ -1,0 +1,35 @@
+{
+  "plugin_id": "customer_fast_astar",
+  "name": "Customer High-Speed A* Planner",
+  "version": "1.0.0",
+  "plugin_type": "GLOBAL_PLANNER",
+  "entrypoint": "custom_astar_planner:CustomerAStarPlanner",
+  "author": "Partner AGV Team",
+  "description": "以 SDK 實作的八連通 A* 全域規劃器範例",
+  "capabilities": [
+    "DIFFERENTIAL_DRIVE",
+    "TIME_SCHEDULED_ROUTING"
+  ],
+  "parameters": [
+    {
+      "name": "heuristic_weight",
+      "type": "float",
+      "default": 1.0,
+      "description": "啟發式權重（>1 為 weighted A*，較快但非最佳）",
+      "min_value": 1.0,
+      "max_value": 5.0
+    },
+    {
+      "name": "allow_diagonal",
+      "type": "bool",
+      "default": true,
+      "description": "是否允許八方向移動"
+    },
+    {
+      "name": "occupied_threshold",
+      "type": "int",
+      "default": 50,
+      "description": "佔用機率 >= 此值視為障礙"
+    }
+  ]
+}

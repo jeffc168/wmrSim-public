@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wmr_sim.plugin.manifest/v1",
+  "type": "object",
+  "required": ["plugin_id", "name", "version", "plugin_type", "entrypoint"],
+  "properties": {
+    "plugin_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Unique identifier for the algorithm plugin"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable name displayed in GUI"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+",
+      "description": "Semantic versioning (e.g. 1.0.0)"
+    },
+    "plugin_type": {
+      "enum": ["GLOBAL_PLANNER", "LOCAL_CONTROLLER", "TRAFFIC_MANAGER", "TASK_MANAGER"],
+      "description": "Category of the algorithm plugin"
+    },
+    "entrypoint": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_.]+(\\:[a-zA-Z0-9_]+)?$",
+      "description": "Python entrypoint module:Class or C++ pluginlib symbol"
+    },
+    "author": {
+      "type": "string",
+      "description": "Developer or organization name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the algorithm"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "DIFFERENTIAL_DRIVE",
+          "OMNIDIRECTIONAL",
+          "DYNAMIC_OBSTACLE_AVOIDANCE",
+          "TIME_SCHEDULED_ROUTING",
+          "MULTI_FLOOR_ROUTING",
+          "ROLLING_LEASE",
+          "TASK_ASSIGNMENT",
+          "RECIPROCAL_AVOIDANCE"
+        ]
+      }
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "default"],
+        "properties": {
+          "name": {"type": "string"},
+          "type": {"enum": ["float", "int", "bool", "str"]},
+          "default": {},
+          "description": {"type": "string"},
+          "min_value": {"type": "number"},
+          "max_value": {"type": "number"}
+        }
+      }
+    },
+    "ros_package": {
+      "type": "string",
+      "description": "Originating ROS 2 package name if applicable"
+    }
+  }
+}
