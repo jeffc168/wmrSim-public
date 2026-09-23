@@ -39,6 +39,37 @@
 
 核心套件之相依項目已宣告於 Debian control 檔，安裝時以 `apt-get install -f` 自動補齊。
 
+### 1.1 GUI 執行期相依
+
+`viz` 3D 視覺化介面需要下列套件（已列入核心套件之 `Depends`，安裝時自動補齊）：
+
+| 套件 | 用途 |
+|---|---|
+| `python3-pyqt5` | Qt 5 視窗框架 |
+| `python3-opengl` | PyOpenGL — `viz/gl_widget.py` 的 3D 渲染，**必要** |
+| `ros-jazzy-ament-index-python` | 解析 `share/wmr_sim` 資源路徑（URDF、fleet_config） |
+| `ros-jazzy-sensor-msgs-py` | LiDAR／點雲訊息轉換 |
+| `python3-matplotlib` | `run_sim --viz` 的 2D 繪圖模式（非 PyQt GUI） |
+
+若以 `dpkg -i` 手動安裝而未補齊相依，啟動 `viz` 時不會出現 traceback，
+而是明確指示缺少項目：
+
+```text
+[wmrSim Viz] 缺少 GUI 執行期相依套件: python3-opengl
+            請執行:  sudo apt-get install -y python3-opengl
+```
+
+### 1.2 GUI 隨附資源
+
+下列資源隨核心套件輸出至 `/opt/ros/jazzy/share/wmr_sim/`，缺少會導致 GUI 啟動失敗：
+
+| 資源 | 用途 |
+|---|---|
+| `models/sample_wmr.urdf`、`sample_wmr.sdf` | 機器人 3D 外觀（URDF loader） |
+| `config/fleet_config.json` | GUI 車隊清單來源 |
+| `maps/` | 佔用網格圖層 |
+| `scenarios/default.yaml` | `scenario.launch.py` 預設劇本 |
+
 ---
 
 ## 2. 發行包結構
