@@ -41,17 +41,6 @@ from wmr_sim.sdk import (
 
 ## 安裝
 
-### 方式 A：使用本地 SDK 原始碼（開發用）
-
-```bash
-git clone https://github.com/<your-account>/<repo>.git
-cd <repo>
-export PYTHONPATH="$PWD/sdk:$PYTHONPATH"
-python3 -c "import wmr_sim.sdk as s; print(s.__version__)"
-```
-
-### 方式 B：建置並安裝 wheel
-
 ```bash
 cd sdk
 python3 -m pip install build --break-system-packages   # 只需一次
