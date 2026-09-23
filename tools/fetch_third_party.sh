@@ -35,7 +35,7 @@ if [ -z "${_REPO_SLUG}" ]; then
     _REPO_SLUG="$(git -C "${_SELF_DIR}" remote get-url origin 2>/dev/null \
         | sed -E 's#.*github\.com[:/]##; s#\.git$##')"
 fi
-[ -z "${_REPO_SLUG}" ] && _REPO_SLUG="jeffc168/wmrSim-sdk"
+[ -z "${_REPO_SLUG}" ] && _REPO_SLUG="jeffc168/wmrSim-public"
 
 BUNDLE_URL="${WMR_THIRD_PARTY_URL:-https://github.com/${_REPO_SLUG}/releases/download/v${RELEASE_VERSION}/${BUNDLE_FILE}}"
 UPSTREAM_PATCH_URL="${WMR_THIRD_PARTY_PATCH_URL:-https://raw.githubusercontent.com/${_REPO_SLUG}/v${RELEASE_VERSION}/patches/wmrsim-jazzy-portability.patch}"
