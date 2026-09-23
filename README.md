@@ -93,6 +93,10 @@ python3 verify_examples.py
 ├── examples/                 3 支可執行範例 + Manifest + 自我驗證
 ├── plugins/schemas/          plugin_manifest_v1 / plugin_registration_v1 JSON Schema
 ├── manuals/                  操作說明書、插件寫作指南、範例說明
+├── tools/fetch_third_party.sh  第三方 ROS 2 套件一鍵取得工具
+├── patches/                  第三方套件的 Jazzy 可攜性補丁
+├── LICENSES/                 第三方授權全文
+├── THIRD_PARTY.md            第三方元件來源、版本、授權、著作權人
 ├── LICENSE                   專有軟體授權條款
 ├── COPYRIGHT                 著作權宣告
 ├── NOTICE                    第三方元件聲明
@@ -139,9 +143,59 @@ print(PluginVerifier.verify_global_planner(MyPlanner()).status.value)  # VALID
 
 ---
 
+## 第三方元件（一鍵取得）
+
+wmrSim 在 Ubuntu 24.04 / ROS 2 Jazzy 上使用下列**第三方套件**。
+這些**不是**宇集創新科技的著作，依其原始授權散布：
+
+| 套件 | 授權 | 取得方式 |
+|---|---|---|
+| `dwb_core` / `dwb_critics` / `dwb_plugins` | BSD-3-Clause (Nav2) | `--apt` 或 `--bundle` |
+| `costmap_converter` (+`_msgs`) | BSD-3-Clause (TU Dortmund) | `--bundle`（未收錄於官方 apt） |
+| `teb_local_planner` / `teb_msgs` | BSD-3-Clause / Apache-2.0 (TU Dortmund) | `--bundle`（未收錄於官方 apt） |
+
+### 一鍵使用
+
+```bash
+# 先看目前狀態
+bash tools/fetch_third_party.sh --check
+
+# 全自動：apt 裝 dwb_*，並下載 costmap_converter / teb_local_planner 原始碼
+bash tools/fetch_third_party.sh --all --ws ~/my_ws
+
+# 只裝 apt 可得的
+bash tools/fetch_third_party.sh --apt
+
+# 從上游 clone 並套用 Jazzy 補丁
+bash tools/fetch_third_party.sh --upstream --ws ~/my_ws
+```
+
+腳本會自動由本 repo 的 `origin` 推導下載來源；必要時可覆寫：
+
+```bash
+WMR_THIRD_PARTY_URL=https://.../wmr_sim_third_party_v1.0.0.tar.gz \
+  bash tools/fetch_third_party.sh --bundle
+```
+
+### 建置
+
+```bash
+source /opt/ros/jazzy/setup.bash
+cd ~/my_ws && colcon build --symlink-install
+```
+
+> **授權合規**：第三方套件的著作權聲明與授權條款已完整保留，
+> 並保存於 `~/my_ws/third_party_LICENSES/`。
+> 完整來源、精確版本與在地補丁清單見 [`THIRD_PARTY.md`](THIRD_PARTY.md)。
+
+---
+
 ## 授權
 
 本 SDK 為專有軟體（Proprietary），著作權屬 **宇集創新科技** 所有。
+
+本 repo 內之 `patches/`、`LICENSES/`、`THIRD_PARTY.md` 係為散布第三方
+元件所需之合規文件；該等第三方元件之著作權歸其各自權利人所有。
 
 - **客戶外掛智財權**：你基於本 repo 公開介面所開發的演算法外掛，
   其智慧財產權**完全歸屬於你**。

@@ -1,0 +1,605 @@
+diff -ruN a/src/costmap_converter/costmap_converter/CMakeLists.txt b/src/costmap_converter/costmap_converter/CMakeLists.txt
+--- a/src/costmap_converter/costmap_converter/CMakeLists.txt
++++ b/src/costmap_converter/costmap_converter/CMakeLists.txt
+@@ -56,6 +56,7 @@
+   src/costmap_to_dynamic_obstacles/multitarget_tracker/HungarianAlg.cpp
+ )
+ 
++target_link_libraries(costmap_converter ${OpenCV_LIBRARIES})
+ ament_target_dependencies(costmap_converter 
+     ${dependencies}
+ )
+@@ -64,6 +65,7 @@
+ 
+ target_link_libraries(standalone_converter
+     costmap_converter
++    ${OpenCV_LIBRARIES}
+ )
+ ament_target_dependencies(standalone_converter
+   ${dependencies}
+diff -ruN a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_converter_interface.h b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_converter_interface.h
+--- a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_converter_interface.h
++++ b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_converter_interface.h
+@@ -194,7 +194,7 @@
+       
+       if (spin_thread)
+       {
+-        RCLCPP_DEBUG(nh_->get_logger(), "costmap_converter", "Spinning up a thread for the CostmapToPolygons plugin");
++        RCLCPP_DEBUG(nh_->get_logger(), "Spinning up a thread for the CostmapToPolygons plugin");
+         need_to_terminate_ = false;
+         
+         worker_timer_ = nh_->create_wall_timer(
+@@ -310,7 +310,7 @@
+ //      std::string raw_plugin_name = static_converter_loader_.getName(plugin_name);
+       static_costmap_converter_->initialize(nh_parent);
+       setStaticCostmapConverterPlugin(static_costmap_converter_);
+-      RCLCPP_INFO(getLogger(), "CostmapToDynamicObstacles: underlying costmap conversion plugin for static obstacles %s loaded.", plugin_name);
++      RCLCPP_INFO(getLogger(), "CostmapToDynamicObstacles: underlying costmap conversion plugin for static obstacles %s loaded.", plugin_name.c_str());
+     }
+     catch(const pluginlib::PluginlibException& ex)
+     {
+diff -ruN a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/background_subtractor.h b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/background_subtractor.h
+--- a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/background_subtractor.h
++++ b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/background_subtractor.h
+@@ -43,7 +43,7 @@
+ #ifndef BACKGROUNDSUBTRACTOR_H_
+ #define BACKGROUNDSUBTRACTOR_H_
+ 
+-#include <cv_bridge/cv_bridge.h>
++#include <cv_bridge/cv_bridge.hpp>
+ 
+ /**
+  * @class BackgroundSubtractor
+diff -ruN a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/blob_detector.h b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/blob_detector.h
+--- a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/blob_detector.h
++++ b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/blob_detector.h
+@@ -92,6 +92,18 @@
+   //! Update internal parameters
+   void updateParameters(const cv::SimpleBlobDetector::Params& parameters);
+ 
++#if CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 11)
++  // OpenCV 4.11 made these SimpleBlobDetector methods pure virtual.
++  void setParams(const cv::SimpleBlobDetector::Params& parameters) override
++  {
++    updateParameters(parameters);
++  }
++  cv::SimpleBlobDetector::Params getParams() const override
++  {
++    return params_;
++  }
++#endif
++
+ protected:
+   struct Center
+   {
+diff -ruN a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.h b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.h
+--- a/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.h
++++ b/src/costmap_converter/costmap_converter/include/costmap_converter/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.h
+@@ -50,7 +50,7 @@
+ #include <rclcpp/rclcpp.hpp>
+ 
+ // OpenCV
+-#include <cv_bridge/cv_bridge.h>
++#include <cv_bridge/cv_bridge.hpp>
+ #include <opencv2/features2d/features2d.hpp>
+ #include <opencv2/video/tracking.hpp>
+ 
+diff -ruN a/src/costmap_converter/costmap_converter/src/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.cpp b/src/costmap_converter/costmap_converter/src/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.cpp
+--- a/src/costmap_converter/costmap_converter/src/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.cpp
++++ b/src/costmap_converter/costmap_converter/src/costmap_to_dynamic_obstacles/costmap_to_dynamic_obstacles.cpp
+@@ -3,7 +3,7 @@
+ #include <pluginlib/class_list_macros.hpp>
+ #include <tf2/LinearMath/Quaternion.h>
+ #include <tf2/LinearMath/Vector3.h>
+-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
++#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+ 
+ PLUGINLIB_EXPORT_CLASS(costmap_converter::CostmapToDynamicObstacles, costmap_converter::BaseCostmapToPolygons)
+ 
+diff -ruN a/src/teb_local_planner/teb_local_planner/CMakeLists.txt b/src/teb_local_planner/teb_local_planner/CMakeLists.txt
+--- a/src/teb_local_planner/teb_local_planner/CMakeLists.txt
++++ b/src/teb_local_planner/teb_local_planner/CMakeLists.txt
+@@ -45,6 +45,17 @@
+ find_package(G2O REQUIRED)
+ find_package(Boost REQUIRED)
+ 
++# On macOS the Conda ROS interface libraries pulled in by teb_msgs include
++# rosidl_generator_py and therefore reference the Python C API.  Unlike a
++# Python extension, controller_server is a pure C++ executable and does not
++# export those symbols.  Link libpython explicitly so pluginlib can dlopen the
++# TEB controller instead of failing on _PyExc_RuntimeError.
++if(APPLE)
++  set(Python3_ROOT_DIR "$ENV{CONDA_PREFIX}")
++  set(Python3_FIND_STRATEGY LOCATION)
++  find_package(Python3 REQUIRED COMPONENTS Development)
++endif()
++
+ # Eigen3 FindScript Backward compatibility (ubuntu saucy)
+ # Since FindEigen.cmake is deprecated starting from jade.
+ if (EXISTS "FindEigen3.cmake")
+@@ -112,8 +123,16 @@
+ target_link_libraries(teb_local_planner
+    ${EXTERNAL_LIBS}
+ )
+-
+-target_compile_definitions(teb_local_planner PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
++if(APPLE)
++  target_link_directories(teb_local_planner PRIVATE ${SUITESPARSE_LIBRARY_DIR})
++  target_link_libraries(teb_local_planner Python3::Python)
++endif()
++
++target_compile_definitions(teb_local_planner PUBLIC
++  "PLUGINLIB__DISABLE_BOOST_FUNCTIONS"
++  # Conda glog 0.7+ requires consumers to opt into its generated export header.
++  "GLOG_USE_GLOG_EXPORT"
++)
+ 
+ 
+ #############
+diff -ruN a/src/teb_local_planner/teb_local_planner/cmake_modules/FindG2O.cmake b/src/teb_local_planner/teb_local_planner/cmake_modules/FindG2O.cmake
+--- a/src/teb_local_planner/teb_local_planner/cmake_modules/FindG2O.cmake
++++ b/src/teb_local_planner/teb_local_planner/cmake_modules/FindG2O.cmake
+@@ -29,39 +29,39 @@
+   FIND_LIBRARY(G2O_CORE_LIB             
+     NAMES g2o_core g2o_core_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_STUFF_LIB            
+     NAMES g2o_stuff g2o_stuff_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_TYPES_SLAM2D_LIB     
+     NAMES g2o_types_slam2d g2o_types_slam2d_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_TYPES_SLAM3D_LIB     
+     NAMES g2o_types_slam3d g2o_types_slam3d_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_SOLVER_CHOLMOD_LIB   
+     NAMES g2o_solver_cholmod g2o_solver_cholmod_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_SOLVER_PCG_LIB       
+     NAMES g2o_solver_pcg g2o_solver_pcg_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_SOLVER_CSPARSE_LIB   
+     NAMES g2o_solver_csparse g2o_solver_csparse_rd
+     PATHS /usr/local /usr 
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_INCREMENTAL_LIB      
+     NAMES g2o_incremental g2o_incremental_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+   FIND_LIBRARY(G2O_CSPARSE_EXTENSION_LIB
+     NAMES g2o_csparse_extension g2o_csparse_extension_rd
+     PATHS /usr/local /usr ${CMAKE_PREFIX_PATH}
+-    PATH_SUFFIXES lib)
++    PATH_SUFFIXES lib lib/x86_64-linux-gnu lib64)
+ 
+   SET(G2O_LIBRARIES ${G2O_CSPARSE_EXTENSION_LIB}
+                     ${G2O_CORE_LIB}           
+diff -ruN a/src/teb_local_planner/teb_local_planner/cmake_modules/FindSUITESPARSE.cmake b/src/teb_local_planner/teb_local_planner/cmake_modules/FindSUITESPARSE.cmake
+--- a/src/teb_local_planner/teb_local_planner/cmake_modules/FindSUITESPARSE.cmake
++++ b/src/teb_local_planner/teb_local_planner/cmake_modules/FindSUITESPARSE.cmake
+@@ -10,6 +10,12 @@
+ #  SUITESPARSE_LIBRARY_DIRS     - all Library directories containing suitesparse libs
+ #  SUITESPARSE_SPQR_VALID       - automatic identification whether or not spqr package is installed correctly
+ 
++IF (SUITESPARSE_INCLUDE_DIRS AND SUITESPARSE_LIBRARIES)
++  # Already in cache, skip detection
++  SET(SUITESPARSE_FOUND TRUE)
++  RETURN()
++ENDIF (SUITESPARSE_INCLUDE_DIRS AND SUITESPARSE_LIBRARIES)
++
+ IF (SUITESPARSE_INCLUDE_DIRS)
+   # Already in cache, be silent
+   SET(SUITESPARSE_FIND_QUIETLY TRUE)
+@@ -40,12 +46,14 @@
+ else( WIN32 )
+    IF(APPLE)
+ 	   FIND_PATH( CHOLMOD_INCLUDE_DIR cholmod.h
+-        	      PATHS /opt/local/include/ufsparse
++	      	      PATHS $ENV{CONDA_PREFIX}/include/suitesparse
++			    /opt/local/include/ufsparse
+ 			    /usr/local/include )
+ 
+            FIND_PATH( SUITESPARSE_LIBRARY_DIR
+-                      NAMES libcholmod.a
+-                      PATHS /opt/local/lib
++                      NAMES libcholmod.dylib libcholmod.a
++                      PATHS $ENV{CONDA_PREFIX}/lib
++			    /opt/local/lib
+ 			    /usr/local/lib )
+    ELSE(APPLE)
+ 	   FIND_PATH( CHOLMOD_INCLUDE_DIR cholmod.h
+@@ -130,4 +138,3 @@
+    SET( SUITESPARSE_FOUND FALSE )
+    MESSAGE(FATAL_ERROR "Unable to find SuiteSparse")
+ ENDIF (SUITESPARSE_INCLUDE_DIRS AND SUITESPARSE_LIBRARIES)
+-
+diff -ruN a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_kinematics.h b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_kinematics.h
+--- a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_kinematics.h
++++ b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_kinematics.h
+@@ -129,8 +129,7 @@
+     double dd_error_2 = deltaS[1]*sin1;
+     double dd_dev = penaltyBoundFromBelowDerivative(dd_error_1+dd_error_2, 0,0);
+     
+-
+-    double dev_nh_abs = sign( ( cos(conf1->theta())+cos(conf2->theta()) ) * deltaS[1] -
++    double dev_nh_abs = g2o::sign( ( cos(conf1->theta())+cos(conf2->theta()) ) * deltaS[1] - 
+ 	      ( sin(conf1->theta())+sin(conf2->theta()) ) * deltaS[0] );
+ 	    
+     // conf1
+diff -ruN a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_obstacle.h b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_obstacle.h
+--- a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_obstacle.h
++++ b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/edge_obstacle.h
+@@ -136,8 +136,8 @@
+     double aux1 = -fabs(aux0) / dist;
+     double dev_norm_x = deltaS[0]*aux1;
+     double dev_norm_y = deltaS[1]*aux1;
+-
+-    double aux2 = cos(angdiff) * sign(aux0);
++    
++    double aux2 = cos(angdiff) * g2o::sign(aux0);
+     double aux3 = aux2 / dist_squared;
+     double dev_proj_x = aux3 * deltaS[1] * dist;
+     double dev_proj_y = -aux3 * deltaS[0] * dist;
+diff -ruN a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/penalties.h b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/penalties.h
+--- a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/penalties.h
++++ b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/penalties.h
+@@ -42,6 +42,7 @@
+ #include <cmath>
+ #include <Eigen/Core>
+ #include <g2o/stuff/misc.h>
++#include <teb_local_planner/misc.h>
+ 
+ namespace teb_local_planner
+ {
+diff -ruN a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/vertex_pose.h b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/vertex_pose.h
+--- a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/vertex_pose.h
++++ b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/g2o_types/vertex_pose.h
+@@ -48,6 +48,7 @@
+ #include <g2o/core/base_vertex.h>
+ #include <g2o/core/hyper_graph_action.h>
+ #include <g2o/stuff/misc.h>
++#include <teb_local_planner/misc.h>
+ 
+ #include "teb_local_planner/pose_se2.h"
+ 
+diff -ruN a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/misc.h b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/misc.h
+--- a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/misc.h
++++ b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/misc.h
+@@ -48,6 +48,17 @@
+ 
+ #include <rclcpp/logging.hpp>
+ 
++
++namespace g2o {
++template <typename T>
++inline int sign(T val) {
++    return (T(0) < val) - (val < T(0));
++}
++inline double average_angle(double a, double b) {
++    return std::atan2( (std::sin(a) + std::sin(b))/2.0, (std::cos(a) + std::cos(b))/2.0 );
++}
++}
++
+ namespace teb_local_planner
+ {
+ #define SMALL_NUM 0.00000001
+@@ -101,43 +112,6 @@
+ }
+ 
+ /**
+- * sign function. (g2o::sign)
+- * @return the sign of x. +1 for x > 0, -1 for x < 0, 0 for x == 0
+- */
+-template <typename T>
+-inline int sign(T x) {
+-  if (x > 0)
+-    return 1;
+-  else if (x < 0)
+-    return -1;
+-  else
+-    return 0;
+-}
+-
+-/**
+- * average two angles
+- */
+-inline double average_angle(double theta1, double theta2) {
+-  double x, y;
+-
+-  x = std::cos(theta1) + std::cos(theta2);
+-  y = std::sin(theta1) + std::sin(theta2);
+-  if (x == 0 && y == 0)
+-    return 0;
+-  else
+-    return std::atan2(y, x);
+-}
+-
+-/**
+- * normalize the angle
+- */
+-inline double normalize_theta(double theta) {
+-  const double result = fmod(theta + M_PI, 2.0 * M_PI);
+-  if (result <= 0.0) return result + M_PI;
+-  return result - M_PI;
+-}
+-
+-/**
+  * @brief Calculate Euclidean distance between two 2D point datatypes
+  * @param point1 object containing fields x and y
+  * @param point2 object containing fields x and y
+diff -ruN a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/pose_se2.h b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/pose_se2.h
+--- a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/pose_se2.h
++++ b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/pose_se2.h
+@@ -39,6 +39,8 @@
+ #ifndef POSE_SE2_H_
+ #define POSE_SE2_H_
+ 
++#include <g2o/stuff/misc.h>
++
+ #include <Eigen/Core>
+ #include "teb_local_planner/misc.h"
+ #include <geometry_msgs/msg/pose.hpp>
+@@ -252,7 +254,7 @@
+   void scale(double factor)
+   {
+     _position *= factor;
+-    _theta = normalize_theta( _theta*factor );
++    _theta = g2o::normalize_theta( _theta*factor );
+   }
+ 	  
+   /**
+@@ -264,7 +266,7 @@
+   {
+     _position.coeffRef(0) += pose_as_array[0];
+     _position.coeffRef(1) += pose_as_array[1];
+-    _theta = normalize_theta( _theta + pose_as_array[2] );
++    _theta = g2o::normalize_theta( _theta + pose_as_array[2] );
+   }
+   
+   /**
+@@ -277,7 +279,7 @@
+   void averageInPlace(const PoseSE2& pose1, const PoseSE2& pose2)
+   {
+     _position = (pose1._position + pose2._position)/2;
+-    _theta = average_angle(pose1._theta, pose2._theta);
++    _theta = g2o::average_angle(pose1._theta, pose2._theta);
+   }
+   
+   /**
+@@ -290,7 +292,7 @@
+     */ 
+   static PoseSE2 average(const PoseSE2& pose1, const PoseSE2& pose2)
+   {
+-    return PoseSE2( (pose1._position + pose2._position)/2 , average_angle(pose1._theta, pose2._theta) );
++    return PoseSE2( (pose1._position + pose2._position)/2 , g2o::average_angle(pose1._theta, pose2._theta) );
+   }
+   
+   /**
+@@ -308,7 +310,7 @@
+     _position.x() = new_x;
+     _position.y() = new_y;
+     if (adjust_theta)
+-        _theta = normalize_theta(_theta+angle);
++        _theta = g2o::normalize_theta(_theta+angle);
+   }
+   
+   ///@}
+@@ -339,7 +341,7 @@
+   PoseSE2& operator+=(const PoseSE2& rhs)
+   {
+     _position += rhs._position;
+-    _theta = normalize_theta(_theta + rhs._theta);
++    _theta = g2o::normalize_theta(_theta + rhs._theta);
+     return *this;
+   }
+   
+@@ -360,7 +362,7 @@
+   PoseSE2& operator-=(const PoseSE2& rhs)
+   {
+     _position -= rhs._position;
+-    _theta = normalize_theta(_theta - rhs._theta);
++    _theta = g2o::normalize_theta(_theta - rhs._theta);
+     return *this;
+   }
+   
+diff -ruN a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/teb_config.h b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/teb_config.h
+--- a/src/teb_local_planner/teb_local_planner/include/teb_local_planner/teb_config.h
++++ b/src/teb_local_planner/teb_local_planner/include/teb_local_planner/teb_config.h
+@@ -76,7 +76,7 @@
+   //! Trajectory related parameters
+   struct Trajectory
+   {
+-    double teb_autosize; //!< Enable automatic resizing of the trajectory w.r.t to the temporal resolution (recommended)
++    bool teb_autosize; //!< Enable automatic resizing of the trajectory w.r.t to the temporal resolution (recommended)
+     double dt_ref; //!< Desired temporal resolution of the trajectory (should be in the magniture of the underlying control rate)
+     double dt_hysteresis; //!< Hysteresis for automatic resizing depending on the current temporal resolution (dt): usually 10% of dt_ref
+     int min_samples; //!< Minimum number of samples (should be always greater than 2)
+diff -ruN a/src/teb_local_planner/teb_local_planner/package.xml b/src/teb_local_planner/teb_local_planner/package.xml
+--- a/src/teb_local_planner/teb_local_planner/package.xml
++++ b/src/teb_local_planner/teb_local_planner/package.xml
+@@ -3,15 +3,15 @@
+   <name>teb_local_planner</name>
+ 
+   <version>0.9.1</version>
+-
++  
+   <description>
+     The teb_local_planner package implements a plugin
+     to the base_local_planner of the 2D navigation stack.
+     The underlying method called Timed Elastic Band locally optimizes
+     the robot's trajectory with respect to trajectory execution time,
+-    separation from obstacles and compliance with kinodynamic constraints at runtime.
++    separation from obstacles and compliance with kinodynamic constraints at runtime.	
+   </description>
+-
++  
+   <maintainer email="christoph.roesmann@tu-dortmund.de">Christoph Rösmann</maintainer>
+ 
+   <license>BSD</license>
+@@ -19,9 +19,9 @@
+   <url type="website">http://wiki.ros.org/teb_local_planner</url>
+ 
+   <author email="christoph.roesmann@tu-dortmund.de">Christoph Rösmann</author>
+-
++  
+   <buildtool_depend>ament_cmake</buildtool_depend>
+-
++  
+   <depend>costmap_converter</depend>
+   <depend>costmap_converter_msgs</depend>
+ 
+@@ -42,7 +42,8 @@
+   <depend>tf2_eigen</depend>
+   <depend>visualization_msgs</depend>
+   <depend>builtin_interfaces</depend>
+-
++  <exec_depend>nav2_bringup</exec_depend>
++  
+   <test_depend>ament_cmake_gtest</test_depend>
+ 
+   <export>
+diff -ruN a/src/teb_local_planner/teb_local_planner/src/optimal_planner.cpp b/src/teb_local_planner/teb_local_planner/src/optimal_planner.cpp
+--- a/src/teb_local_planner/teb_local_planner/src/optimal_planner.cpp
++++ b/src/teb_local_planner/teb_local_planner/src/optimal_planner.cpp
+@@ -1113,7 +1113,7 @@
+     Eigen::Vector2d conf1dir( cos(pose1.theta()), sin(pose1.theta()) );
+     // translational velocity
+     double dir = deltaS.dot(conf1dir);
+-    vx = (double) sign(dir) * deltaS.norm()/dt;
++    vx = (double) g2o::sign(dir) * deltaS.norm()/dt;
+     vy = 0;
+   }
+   else // holonomic robot
+diff -ruN a/src/teb_local_planner/teb_local_planner/src/recovery_behaviors.cpp b/src/teb_local_planner/teb_local_planner/src/recovery_behaviors.cpp
+--- a/src/teb_local_planner/teb_local_planner/src/recovery_behaviors.cpp
++++ b/src/teb_local_planner/teb_local_planner/src/recovery_behaviors.cpp
+@@ -41,7 +41,8 @@
+ #include <limits>
+ #include <functional>
+ #include <numeric>
+-#include "teb_local_planner/misc.h"
++#include <g2o/stuff/misc.h>
++#include <teb_local_planner/misc.h>
+ 
+ namespace teb_local_planner
+ {
+@@ -99,7 +100,7 @@
+     {
+         v_mean += buffer_[i].v;
+         omega_mean += buffer_[i].omega;
+-        if ( i>0 && sign(buffer_[i].omega) != sign(buffer_[i-1].omega) )
++        if ( i>0 && g2o::sign(buffer_[i].omega) != g2o::sign(buffer_[i-1].omega) )
+             ++omega_zero_crossings;
+     }
+     v_mean /= n;
+diff -ruN a/src/teb_local_planner/teb_local_planner/src/teb_local_planner_ros.cpp b/src/teb_local_planner/teb_local_planner/src/teb_local_planner_ros.cpp
+--- a/src/teb_local_planner/teb_local_planner/src/teb_local_planner_ros.cpp
++++ b/src/teb_local_planner/teb_local_planner/src/teb_local_planner_ros.cpp
+@@ -54,7 +54,12 @@
+ #include "g2o/solvers/csparse/linear_solver_csparse.h"
+ #include "g2o/solvers/cholmod/linear_solver_cholmod.h"
+ 
++#if __has_include(<nav2_core/controller_exceptions.hpp>)
+ #include <nav2_core/controller_exceptions.hpp>
++#include <nav2_core/planner_exceptions.hpp>
++#elif __has_include(<nav2_core/exceptions.hpp>)
++#include <nav2_core/exceptions.hpp>
++#endif
+ #include <nav2_costmap_2d/footprint.hpp>
+ #include <nav_2d_utils/tf_help.hpp>
+ 
+@@ -246,7 +251,7 @@
+   // check if plugin initialized
+   if(!initialized_)
+   {
+-    throw nav2_core::ControllerException(
++    throw nav2_core::PlannerException(
+       std::string("teb_local_planner has not been initialized, please call initialize() before using this planner")
+     );
+   }
+@@ -286,7 +291,7 @@
+   if (!transformGlobalPlan(global_plan_, robot_pose, *costmap_, cfg_->map_frame, cfg_->trajectory.max_global_plan_lookahead_dist,
+                            transformed_plan, &goal_idx, &tf_plan_to_global))
+   {
+-    throw nav2_core::ControllerException(
++    throw nav2_core::PlannerException(
+       std::string("Could not transform the global plan to the frame of the controller")
+     );
+   }
+@@ -301,7 +306,7 @@
+   // Return false if the transformed global plan is empty
+   if (transformed_plan.empty())
+   {
+-    throw nav2_core::ControllerException(
++    throw nav2_core::PlannerException(
+       std::string("Transformed plan is empty. Cannot determine a local plan.")
+     );
+   }
+@@ -359,7 +364,7 @@
+     time_last_infeasible_plan_ = clock_->now();
+     last_cmd_ = cmd_vel.twist;
+     
+-    throw nav2_core::ControllerException(
++    throw nav2_core::PlannerException(
+       std::string("teb_local_planner was not able to obtain a local plan for the current setting.")
+     );
+   }
+@@ -376,7 +381,7 @@
+     ++no_infeasible_plans_; // increase number of infeasible solutions in a row
+     time_last_infeasible_plan_ = clock_->now();
+     last_cmd_ = cmd_vel.twist;
+-    throw nav2_core::ControllerException(
++    throw nav2_core::PlannerException(
+       std::string("TebLocalPlannerROS: velocity command invalid (hasDiverged). Resetting planner...")
+     );
+   }
+@@ -404,7 +409,7 @@
+     time_last_infeasible_plan_ = clock_->now();
+     last_cmd_ = cmd_vel.twist;
+     
+-    throw nav2_core::ControllerException(
++    throw nav2_core::PlannerException(
+       std::string("TebLocalPlannerROS: trajectory is not feasible. Resetting planner...")
+     );
+   }
+@@ -417,7 +422,7 @@
+     time_last_infeasible_plan_ = clock_->now();
+     last_cmd_ = cmd_vel.twist;
+     
+-    throw nav2_core::ControllerException(
++    throw nav2_core::PlannerException(
+       std::string("TebLocalPlannerROS: velocity command invalid. Resetting planner...")
+     );
+   }
+@@ -441,7 +446,7 @@
+       ++no_infeasible_plans_; // increase number of infeasible solutions in a row
+       time_last_infeasible_plan_ = clock_->now();
+       
+-      throw nav2_core::ControllerException(
++      throw nav2_core::PlannerException(
+         std::string("TebLocalPlannerROS: Resulting steering angle is not finite. Resetting planner...")
+       );
+     }
+@@ -939,7 +944,7 @@
+   double radius = v/omega;
+   
+   if (fabs(radius) < min_turning_radius)
+-    radius = double(sign(radius)) * min_turning_radius;
++    radius = double(g2o::sign(radius)) * min_turning_radius; 
+ 
+   return std::atan(wheelbase / radius);
+ }

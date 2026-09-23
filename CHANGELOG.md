@@ -29,6 +29,14 @@
 - **對外開放手冊**（`manuals/`）
   - 操作說明書、插件寫作指南、範例說明
 - **授權文件**：`LICENSE`、`COPYRIGHT`、`NOTICE`、`EULA.md`
+- **第三方元件一鍵取得**
+  - `tools/fetch_third_party.sh`：`--check` / `--apt` / `--bundle` /
+    `--upstream` / `--all`，自動由 repo `origin` 推導下載來源
+  - `third_party/`：第三方 ROS 2 套件原始碼包
+    （`wmr_sim_third_party_v1.0.0.tar.gz`，含已套用之 Jazzy 補丁）
+  - `patches/wmrsim-jazzy-portability.patch`：相對上游的 20 檔可攜性補丁
+  - `LICENSES/`：第三方授權全文
+  - `THIRD_PARTY.md`：來源、版本、授權、著作權人與補丁說明
 
 ### Changed
 
@@ -37,6 +45,13 @@
   `wmr_sim.task_management` 不存在而失敗，導致無法離線開發外掛。
   現在介面、資料結構、`PluginVerifier`、`PluginDiscoverer` 均可獨立使用；
   僅 `SdkTrafficAdapter` / `SdkTaskAdapter` 需核心。
+
+### Fixed (third-party compliance)
+
+- 補齊第三方套件缺失的授權檔：`dwb_core`、`dwb_critics`、`dwb_plugins`、
+  `costmap_converter`、`teb_msgs` 原均無 `LICENSE`，現已補附完整
+  BSD-3-Clause / Apache-2.0 全文與著作權人標示，符合
+  BSD-3-Clause 第 1 條「保留著作權聲明與授權條款」之要求。
 
 ### Fixed
 
