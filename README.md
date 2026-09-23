@@ -69,6 +69,51 @@ python3 verify_examples.py
 結果: ALL PASS — 範例外掛與 SDK 契約一致
 ```
 
+## GUI（3D 視覺化）
+
+本 repo **不含**模擬核心，GUI 需先取得授權的核心套件（`ros-jazzy-wmr-sim-core`）。
+
+### 環境需求
+
+| 套件 | 用途 |
+|---|---|
+| `python3-pyqt5` | Qt 5 視窗框架 |
+| `python3-opengl` | PyOpenGL — `viz/gl_widget.py` 的 3D 渲染，**必要** |
+| `ros-jazzy-ament-index-python` | 解析 `share/wmr_sim` 資源路徑（URDF、fleet_config） |
+| `ros-jazzy-sensor-msgs-py` | LiDAR／點雲訊息轉換 |
+| `python3-matplotlib` | `run_sim --viz` 的 2D 繪圖模式（非 PyQt GUI） |
+
+以上已列入核心套件的 `Depends`，以核心發行包的 `bash install.sh` 安裝會自動補齊。
+
+### 啟動
+
+```bash
+source /opt/ros/jazzy/setup.bash
+
+# 完整模擬 + GUI
+ros2 launch wmr_sim multi_robot_sim.launch.py gui:=true
+
+# 專案啟動腳本（gui:true / gui:false 切換）
+bash launch_nav2.bash gui:true
+
+# 只開視覺化介面（可指定初始監聽車輛）
+ros2 run wmr_sim viz --robots wmr_0,wmr_1
+```
+
+需要 X11 / Wayland 桌面環境。純背景執行用 `gui:=false`；
+無桌面環境（Ubuntu Server、容器、遠端主機）請見
+[`manuals/OPERATION_MANUAL.md`](manuals/OPERATION_MANUAL.md)
+的「無桌面環境（Headless / 遠端 X11）」小節。
+
+### 缺件時的訊息
+
+`viz` 啟動前會檢查相依，缺少時不會抛出 traceback：
+
+```text
+[wmrSim Viz] 缺少 GUI 執行期相依套件: python3-opengl
+            請執行:  sudo apt-get install -y python3-opengl
+```
+
 ## Repo 結構
 
 ```text
@@ -98,7 +143,7 @@ python3 verify_examples.py
 |---|---|
 | [`manuals/PLUGIN_AUTHORING_GUIDE.md`](manuals/PLUGIN_AUTHORING_GUIDE.md) | 介面契約、信任邊界、Manifest、註冊、驗證、除錯 |
 | [`manuals/EXAMPLES_GUIDE.md`](manuals/EXAMPLES_GUIDE.md) | 三個範例逐段解析與端到端練習 |
-| [`manuals/OPERATION_MANUAL.md`](manuals/OPERATION_MANUAL.md) | 平台操作說明書（安裝、啟動、GUI、API） |
+| [`manuals/OPERATION_MANUAL.md`](manuals/OPERATION_MANUAL.md) | 操作說明書：安裝、GUI 環境設定與啟動、遠端 X11、API |
 | [`plugins/schemas/`](plugins/schemas/) | 外掛宣告與註冊的正式 JSON Schema |
 
 ## 最小範例
@@ -129,6 +174,8 @@ print(PluginVerifier.verify_global_planner(MyPlanner()).status.value)  # VALID
 | `'Pose2D' object has no attribute 'theta'` | 欄位是 **`theta_rad`** |
 | `unexpected keyword argument 'linear'` | `Velocity2D` 欄位是 **`vx` / `vy` / `vtheta_rad_s`** |
 | `ModuleNotFoundError: wmr_sim.task_management` | 你呼叫了 `SdkTrafficAdapter` / `SdkTaskAdapter`，這兩者需要核心 |
+| `ModuleNotFoundError: No module named 'OpenGL'` | 已裝核心但缺 GUI 相依：`sudo apt-get install -y python3-opengl` |
+| GUI 無法開啟 | 無 `DISPLAY`。請見 [`manuals/OPERATION_MANUAL.md`](manuals/OPERATION_MANUAL.md) 的遠端 X11 設定 |
 
 ---
 

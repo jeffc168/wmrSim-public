@@ -100,6 +100,11 @@ wmr_sim_v1.0.0_ubuntu24.04_amd64/
 
 > **注意**：核心內部技術文件（`docs/`）不對外開放，不包含於發行包中。
 > 客戶可取得者為 `manuals/` 下之操作、插件寫作與範例說明文件。
+>
+> **若你取得的是公開的 Plugin SDK repo**（只有 `sdk/`、`examples/`、`manuals/`、
+> `plugins/`，沒有 `packages/`、`install.sh`、`verify.sh`、`config/`），表示
+> **模擬核心需另行取得授權後安裝**；本節所述之完整結構會隨核心發行包一併交付。
+> 核心取得方式請洽授權方窗口。
 
 ---
 
@@ -210,6 +215,62 @@ ros2 run wmr_sim fleet_server         # 車隊管理伺服器
 ros2 run wmr_sim integration_gateway  # HTTP 整合網關
 ros2 run wmr_sim plugin_registry      # 外掛註冊中心
 ```
+
+### 5.4 無桌面環境（Headless / 遠端 X11）
+
+`viz` 需要 X11 / Wayland。若核心跑在 Ubuntu Server、容器或遠端主機，有三種做法。
+
+#### 方式 A：SSH X11 轉發（建議，安全且不需 xhost）
+
+```bash
+# 客戶端（有桌面）
+ssh -X user@<伺服器>
+
+# 登入後於伺服器執行
+source /opt/ros/jazzy/setup.bash
+ros2 run wmr_sim viz
+```
+
+若不用 `ssh -X` 而在同網段直連，需在桌面端開授權：
+
+```bash
+xhost + <伺服器IP>          # 桌面端
+ssh user@<伺服器>
+ export DISPLAY=<桌面IP>:0  # 伺服器
+ros2 run wmr_sim viz
+```
+
+#### 方式 B：完全不啟動介面（產線、CI、壓測建議）
+
+```bash
+ros2 launch wmr_sim multi_robot_sim.launch.py gui:=false
+bash launch_nav2.bash gui:false
+```
+
+`scenario.launch.py` 另有 `enable_viz` 參數可設為 `false`。
+
+#### 方式 C：虛擬顯示（無桌面但需截圖或自動化測試）
+
+```bash
+sudo apt-get install -y xvfb
+xvfb-run -a -s "-screen 0 1920x1080x24" ros2 run wmr_sim viz
+```
+
+Wayland 環境下若 OpenGL 初始化失敗，可強制走 X11：
+
+```bash
+export QT_QPA_PLATFORM=xcb
+```
+
+#### 疑難排查
+
+| 症狀 | 原因 / 處理 |
+|---|---|
+| `qt.qpa.xcb: could not connect to display` | `DISPLAY` 未設定，或 X server 拒繪連線 |
+| `cannot open display` 但 `DISPLAY` 正確 | 未通過 `xhost` 授權；改用 `ssh -X` |
+| 視窗出現但畫面全黑 | 顯卡不支援 OpenGL 2.1 相容模式；試 `LIBGL_ALWAYS_SOFTWARE=1` |
+| `No module named 'OpenGL'` | `sudo apt-get install -y python3-opengl` |
+| 遠端 X11 延遲過高 | 改用方式 B，或改用 VNC 取代 X11 轉發 |
 
 ---
 

@@ -6,6 +6,12 @@
 
 本目錄僅包含**對外開放**之客戶文件。核心內部技術文件不在發行範圍內。
 
+> **若你取得的是公開的 Plugin SDK repo**（僅有 `sdk/`、`examples/`、`manuals/`、
+> `plugins/`），則**模擬核心不在其中**，需另行取得授權後安裝。
+> 此時 `OPERATION_MANUAL.md` 第 2 節所述之完整發行包結構（`packages/`、
+> `install.sh`、`verify.sh`、`config/`）會隨核心發行包一併交付；
+> 若只要開發外掛，請直接參閱 `PLUGIN_AUTHORING_GUIDE.md` 與 `EXAMPLES_GUIDE.md`。
+
 | 文件 | 說明 | 適用對象 |
 |---|---|---|
 | [`OPERATION_MANUAL.md`](OPERATION_MANUAL.md) | 操作說明書：安裝、啟動、GUI、設定、診斷 | 現場工程師 / 維運人員 |
