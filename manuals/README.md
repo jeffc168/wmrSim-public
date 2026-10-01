@@ -14,6 +14,7 @@
 
 | 文件 | 說明 | 適用對象 |
 |---|---|---|
+| [`install_ubuntu24.md`](install_ubuntu24.md) | Ubuntu 24.04 本地下載、安裝與驗證指南 | 開發者 / 終端使用者 |
 | [`OPERATION_MANUAL.md`](OPERATION_MANUAL.md) | 操作說明書：安裝、啟動、GUI、設定、診斷 | 現場工程師 / 維運人員 |
 | [`PLUGIN_AUTHORING_GUIDE.md`](PLUGIN_AUTHORING_GUIDE.md) | 插件寫作指南：介面契約、Manifest、註冊、驗證 | 演算法工程師 |
 | [`EXAMPLES_GUIDE.md`](EXAMPLES_GUIDE.md) | 範例說明：官方範例逐段解析與實作練習 | 演算法工程師 |

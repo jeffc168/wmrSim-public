@@ -141,6 +141,7 @@ ros2 run wmr_sim viz --robots wmr_0,wmr_1
 
 | 文件 | 內容 |
 |---|---|
+| [`manuals/install_ubuntu24.md`](manuals/install_ubuntu24.md) | Ubuntu 24.04 本地下載、安裝與驗證指南 |
 | [`manuals/PLUGIN_AUTHORING_GUIDE.md`](manuals/PLUGIN_AUTHORING_GUIDE.md) | 介面契約、信任邊界、Manifest、註冊、驗證、除錯 |
 | [`manuals/EXAMPLES_GUIDE.md`](manuals/EXAMPLES_GUIDE.md) | 三個範例逐段解析與端到端練習 |
 | [`manuals/OPERATION_MANUAL.md`](manuals/OPERATION_MANUAL.md) | 操作說明書：安裝、GUI 環境設定與啟動、遠端 X11、API |
