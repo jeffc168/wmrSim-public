@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="wmrSim 多機器人模擬與車隊控制軟體功能總覽及 GUI 操作手冊">
+<title>宇集-多機器人管理系統功能總覽與 GUI 操作</title>
+<style>
+:root{color-scheme:light;--ink:#18313a;--muted:#526b74;--accent:#087e78;--line:#d9e5e7;--paper:#fff;--wash:#f1f7f7;--code:#102a32}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.78 system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif}
+header{background:linear-gradient(130deg,#12323c,#176b69);color:#fff;padding:48px max(24px,calc((100vw - 1120px)/2)) 40px}
+header .eyebrow{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:#a9e3dc;font-weight:700}
+h1{font-size:clamp(2rem,5vw,3.35rem);line-height:1.2;margin:.45em 0}
+header p{max-width:820px;color:#d5ece8;margin:0;font-size:1.05rem}
+main{max-width:1120px;margin:26px auto 72px;padding:0 20px;display:grid;grid-template-columns:245px minmax(0,1fr);gap:24px}
+nav{align-self:start;position:sticky;top:18px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px}
+nav strong{display:block;margin:0 0 8px}nav a{display:block;text-decoration:none;color:var(--muted);padding:5px 8px;border-radius:7px;font-size:.92rem}nav a:hover{background:#e7f5f3;color:var(--accent)}
+article{min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:clamp(22px,4vw,46px);box-shadow:0 8px 30px #153c4410}
+section{scroll-margin-top:20px;padding:0 0 24px;margin:0 0 26px;border-bottom:1px solid var(--line)}section:last-child{border:0;margin:0;padding:0}
+h2{font-size:1.55rem;margin:0 0 14px;line-height:1.35}h3{font-size:1.12rem;margin:22px 0 8px;color:#145d5b}
+p{margin:8px 0}ul,ol{padding-left:1.4rem;margin:8px 0}li{margin:5px 0}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.94rem}th,td{text-align:left;padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#edf6f5;color:#145d5b}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eaf1f2;border-radius:4px;padding:.08em .32em;color:#12464d}
+pre{overflow:auto;background:var(--code);color:#e4f6f1;padding:15px 18px;border-radius:10px;line-height:1.55}pre code{background:none;color:inherit;padding:0}
+.callout{border-left:4px solid var(--accent);background:#e9f6f4;padding:12px 16px;border-radius:0 9px 9px 0;margin:14px 0}
+.small{font-size:.9rem;color:var(--muted)}.pill{display:inline-block;border:1px solid #a6cfcb;border-radius:99px;padding:1px 9px;color:#176b69;font-size:.82rem;margin:2px}
+footer{max-width:1120px;margin:-50px auto 36px;padding:0 20px;color:var(--muted);font-size:.85rem}
+@media(max-width:820px){main{display:block;margin-top:14px}nav{position:static;margin-bottom:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}nav strong{grid-column:1/-1}article{padding:22px 18px}}
+@media print{body{background:#fff}header{padding:25px;color:#123}main{display:block;margin:0 auto}nav{display:none}article{border:0;box-shadow:none;padding:0}a{color:inherit}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">wmrSim · 使用者手冊</div>
+  <h1>宇集-多機器人管理系統功能總覽與 GUI 操作</h1>
+  <p>本手冊面向模擬操作人員與車隊管理者，介紹 wmrSim 桌面 3D 視覺化工具及 Web Dashboard 的主要功能、操作流程與連線檢查。</p>
+</header>
+<main>
+<nav aria-label="章節導覽">
+  <strong>本手冊</strong>
+  <a href="#overview">軟體功能</a><a href="#start">啟動與連線</a>
+  <a href="#desktop">桌面 3D GUI</a><a href="#dashboard">Web Dashboard</a>
+  <a href="#workflow">派送導航任務</a><a href="#pages">Dashboard 頁面</a>
+  <a href="#trouble">狀態與問題排除</a>
+</nav>
+<article>
+<section id="overview">
+<h2>1. wmrSim 可以做什麼</h2>
+<p>wmrSim 是 ROS 2 Jazzy 上的多機器人模擬與車隊操作軟體。桌面視覺化工具用於 3D 場域、機器人與感測資料檢視；Web Dashboard 用於營運總覽、地圖任務派送、車隊狀態與事件監控。兩個介面連接同一個模擬與 Gateway。</p>
+<table><thead><tr><th>功能</th><th>用途</th><th>主要介面</th></tr></thead><tbody>
+<tr><td>多車隊模擬</td><td>檢視機器人位置、狀態、路徑與任務執行情況。</td><td>桌面 GUI、Dashboard</td></tr>
+<tr><td>地圖與樓層</td><td>載入地圖、切換樓層，管理樓層和地圖的對應。</td><td>桌面 GUI、Dashboard</td></tr>
+<tr><td>導航任務</td><td>在地圖選取機器人、加入目標點、選擇 P2P、DWA 或 TEB，然後派送任務。</td><td>Dashboard 地圖調度、桌面 GUI</td></tr>
+<tr><td>感測顯示</td><td>查看地圖、LiDAR、Point Cloud 與可用的相機資訊。</td><td>桌面 GUI、Dashboard 總覽</td></tr>
+<tr><td>交通與電梯</td><td>觀察交通資源／保留狀態、樓宇設施及電梯協調狀態。</td><td>Dashboard、桌面電梯面板</td></tr>
+<tr><td>任務與診斷</td><td>查看任務事件、車隊指標、Gateway 連線及服務能力。</td><td>Dashboard</td></tr>
+</tbody></table>
+<div class="callout">Dashboard 的命令與資料頁面會依 Gateway 是否提供相應 API、目前使用者權限及後端服務狀態而顯示。若某項能力不可用，請先查看「系統設定」中的連線與能力資訊。</div>
+</section>
+<section id="start">
+<h2>2. 啟動與連線</h2>
+<p>Ubuntu 24.04 安裝完成後，以一般登入帳號開啟 Terminal：</p>
+<pre><code>wmrsim doctor
+wmrsim start</code></pre>
+<p><code>wmrsim doctor</code> 檢查 ROS 2、核心套件、Dashboard 與 SDK；<code>wmrsim start</code> 啟動模擬、Gateway 和桌面 GUI，並嘗試開啟瀏覽器。Dashboard 預設網址是 <a href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a>。</p>
+<p>沒有桌面環境的主機使用 <code>wmrsim start --headless</code>，之後從有權限的瀏覽器連到該主機所設定的 Gateway 位址。不要以 <code>sudo wmrsim start</code> 啟動 GUI。</p>
+<p>若 Gateway 啟用登入，使用管理者提供的帳號登入。Dashboard 顯示「Offline」或連線錯誤時，先確認模擬與 Gateway 已啟動，再到「系統設定」檢查 Gateway URL、連線狀態及 API 能力。</p>
+</section>
+<section id="desktop">
+<h2>3. 桌面 3D GUI</h2>
+<p>主視窗由上方工具列、左側設定面板、中央 2D/3D 場域視圖和下方狀態列組成。左側的「WMR 管理」、「場域管理」、「顯示圖層」可分別展開或收合。</p>
+<h3>3.1 機器人與原點</h3>
+<ol>
+<li>在「WMR 管理」選取機器人，查看或設定 X、Y、Theta（弧度）、所在樓層及導航演算法。</li>
+<li>按「更改原點／樓層」套用選取機器人的起始位置或樓層。</li>
+<li>按「開始移動任務」開始目前選定的移動任務。新增或退役機器人屬維護操作，操作前確認車隊設定及目標樓層。</li>
+<li>「復原已退役 WMR」可從封存清單還原曾退役的機器人；如封存的樓層或地圖與目前設定不相容，系統會拒絕還原。</li>
+</ol>
+<h3>3.2 地圖、樓層與任務點</h3>
+<p>「場域管理」含「地圖」、「樓層」、「電梯」頁籤。於地圖頁載入清單中的地圖，或加入外部地圖 YAML；於樓層頁新增、儲存、刪除樓層並指定地圖與樓高，再按「顯示此樓層」。刪除樓層前確認沒有機器人或電梯設定依賴該樓層。</p>
+<p>工具列開啟「設定目標點」後，在地圖上依序點選位置。可選點位種類；停靠點可設定停靠秒數，資源 ID 可留空或填入對應資源。按「清除目標點」清除目前編輯的路徑；按「匯出目標 JSON」保存目標點。場域中的已儲存任務點可在左側「任務點位管理」儲存或清除。</p>
+<h3>3.3 感測圖層與電梯</h3>
+<p>展開「顯示圖層」可切換 Map、LiDAR Scans、Point Cloud，並調整 LiDAR 障礙點大小。「檢視」選單可開啟視覺感測控制面板；其中障礙物輔助和 Tag 定位選項是否可用，取決於目前場景與感測資料。</p>
+<p>「場域管理 → 電梯」顯示電梯、樓層、運行／門狀態、使用者、排隊與故障資訊。人工呼叫及模擬到站等維護控制只在系統允許的維護狀態下使用；先確認電梯及機器人狀態再送出命令。</p>
+<h3>3.4 3D 視角操作</h3>
+<table><thead><tr><th>操作</th><th>功能</th></tr></thead><tbody>
+<tr><td>2D 俯視</td><td>按工具列「2D [1]」或鍵盤 1</td></tr>
+<tr><td>3D 環繞</td><td>按「3D [3]」或鍵盤 3</td></tr>
+<tr><td>重設視角／顯示完整地圖</td><td>檢視選單「重設視角」／「顯示完整地圖」；快捷鍵 Z／Home</td></tr>
+<tr><td>聚焦／跟隨選定車輛</td><td>檢視選單「聚焦選定 WMR」（F）或開啟「跟隨選定 WMR」</td></tr>
+<tr><td>平移／縮放</td><td>2D：左鍵拖曳平移、滾輪縮放；3D：中鍵平移、右鍵上下縮放</td></tr>
+<tr><td>旋轉</td><td>2D：右鍵或 Shift+拖曳；3D：左鍵拖曳環繞</td></tr>
+</tbody></table>
+<p class="small">點選目標點時左鍵用於放置；中鍵或 Space+左鍵可平移，滾輪縮放。視窗「說明 → 視角操作說明」也會顯示操作提示。</p>
+</section>
+<section id="dashboard">
+<h2>4. Web Dashboard</h2>
+<p>Dashboard 左側導覽切換營運頁面；頂端顯示當前頁面與 Gateway 連線狀態。小螢幕會改用行動版導覽；地圖頁提供適合手持裝置的全螢幕地圖操作。</p>
+<h3>4.1 從地圖派送導航任務</h3>
+<ol>
+<li>開啟「地圖調度」，先選擇樓層，再選擇要派送任務的機器人。</li>
+<li>選擇導航模式：P2P、DWA 或 TEB。</li>
+<li>在地圖上點選路徑目標點，檢查目標點順序和地圖位置。需要重來時按「清除目標點」。</li>
+<li>確認所選機器人、樓層與路徑後按「派送任務」。命令能力或帳號權限不足時，按鈕會停用或顯示錯誤。</li>
+<li>到「任務中心」查看任務狀態及事件；到「機器人」查看車輛連線與位置。</li>
+</ol>
+<div class="callout">派送前請確認目標點位於正確樓層與可通行區域。模擬環境畫面上的路徑不代表真實設備已完成動作。</div>
+</section>
+<section id="pages">
+<h2>5. Dashboard 頁面說明</h2>
+<table><thead><tr><th>頁面</th><th>畫面用途</th><th>操作提示</th></tr></thead><tbody>
+<tr><td>營運總覽</td><td>車隊在線數、執行中任務、作用樓層、需注意事件；即時地圖、活動、相機影像及車隊快照。</td><td>由總覽卡片或地圖連結進入相關頁面。</td></tr>
+<tr><td>地圖調度</td><td>樓層與機器人選擇、路徑編輯及導航派送。</td><td>先選樓層與車輛，再編輯目標點及派送。</td></tr>
+<tr><td>機器人</td><td>車隊清單、單機狀態／位置／連線品質及地圖。</td><td>用來確認派送對象和執行中的車輛狀態。</td></tr>
+<tr><td>任務中心</td><td>活動任務與任務事件清單。</td><td>追蹤事件時間、任務、車輛、狀態及來源；此頁主要用於監看。</td></tr>
+<tr><td>交通管理</td><td>交通演算法可用狀態、任務、資源、保留資訊、錯誤及交通事件。</td><td>若顯示無狀態，檢查 Gateway 是否提供 Traffic API。</td></tr>
+<tr><td>Metrics</td><td>機器人總數、在線數、執行／完成任務及車隊、任務、交通事件趨勢。</td><td>Gateway 啟動後逐步累積樣本；新啟動時暫時沒有圖表屬正常。</td></tr>
+<tr><td>樓宇設施</td><td>電梯、電動門、閘門、輸送帶等設施狀態與控制項。</td><td>命令由 Gateway 傳送並由後端授權；只操作已配置且允許的設施。</td></tr>
+<tr><td>貨物條碼</td><td>貨物清單、條碼掃描事件及交貨狀態。</td><td>資料由 Gateway 與後端協調服務提供。</td></tr>
+<tr><td>電梯監控</td><td>電梯協調器啟用時才出現，顯示樓層、移動狀態與電梯台數。</td><td>若未出現，代表目前未偵測到啟用中的電梯協調器。</td></tr>
+<tr><td>系統設定</td><td>資料來源模式、連線／就緒狀態、即時通道、Gateway URL 與 API 能力。</td><td>Gateway URL 有變更時使用頁面的連線測試與連線提示。</td></tr>
+</tbody></table>
+<p>若伺服器要求登入，Gateway 登入頁會依部署設定提供帳號驗證；系統管理員負責建立帳號與設定可用角色。</p>
+</section>
+<section id="trouble">
+<h2>6. 狀態與問題排除</h2>
+<table><thead><tr><th>現象</th><th>建議處理</th></tr></thead><tbody>
+<tr><td>Dashboard 顯示 Offline</td><td>確認 <code>wmrsim start</code> 的終端仍在執行；開啟「系統設定」檢查 Gateway URL、連線測試、ready 狀態和資料來源。</td></tr>
+<tr><td>地圖或車輛列表空白</td><td>確認場景已載入、所選樓層有地圖且 ROS 節點已啟動；桌面端先在「場域管理」載入地圖。</td></tr>
+<tr><td>派送任務按鈕停用</td><td>確認已選樓層、機器人與至少一個目標點；也要確認 Gateway 命令 API 與目前帳號權限可用。</td></tr>
+<tr><td>交通／電梯／貨物頁沒有資料</td><td>這些頁面依賴對應的後端服務和 Gateway API；查看頁面空狀態及系統設定的能力清單。</td></tr>
+<tr><td>模擬啟動失敗</td><td>執行 <code>wmrsim doctor</code>，保留啟動終端的完整錯誤訊息，再依錯誤修復 ROS 或套件環境。</td></tr>
+</tbody></table>
+<p>停止模擬時回到啟動它的終端按 Ctrl+C。日常使用請從桌面應用程式或一般帳號終端啟動，不需要重新安裝或手動載入 ROS 環境。</p>
+</section>
+</article>
+</main>
+<footer>wmrSim 使用者操作文件 · 依此版本提供的桌面 GUI 與 Dashboard 編寫。實際可用功能依安裝版本、Gateway API、場景設定及使用者權限而異。</footer>
+</body>
+</html>

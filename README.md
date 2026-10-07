@@ -12,8 +12,20 @@ Copyright (C) 2026 宇集創新科技. All Rights Reserved. Release V1.0
 資料結構、Manifest JSON Schema、外掛驗證器、探索器，以及可直接執行的範例。
 
 > **注意**：wmrSim **模擬核心**（導航、交通管制、電梯協同、視覺化引擎）為專有軟體，
-> 以無原始碼 Bytecode 二進位形式獨立發行，**不在此 repo 中**。
+> 以無原始碼 Bytecode 二進位形式獨立發行，未公開於此 SDK repo；已授權使用者可使用下方預編譯發行包。
 > 本 repo 的介面已設計為可獨立開發與測試——不需要核心也能撰寫並驗證外掛。
+
+## wmrSim 1.0.0 安裝包與操作手冊
+
+一般 Ubuntu 24.04 amd64 使用者請下載並依 [安裝指南](install.md) 操作：
+
+- [單檔安裝器](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run)
+- [安裝器 SHA-256](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run.sha256)
+- [完整 tar.gz 套件](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz)
+- [tar.gz SHA-256](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz.sha256)
+- [軟體功能總覽與 GUI 使用者手冊](user_manual.html)
+
+核心套件為授權發行的預編譯二進位；此處提供安裝包，不公開核心原始碼。
 
 ---
 
