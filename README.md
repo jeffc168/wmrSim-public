@@ -17,15 +17,46 @@ Copyright (C) 2026 宇集創新科技. All Rights Reserved. Release V1.0
 
 ## wmrSim 1.0.0 安裝包與操作手冊
 
-一般 Ubuntu 24.04 amd64 使用者請下載並依 [安裝指南](install.md) 操作：
+一般使用者請在乾淨的 **Ubuntu 24.04 LTS amd64** 環境安裝。推薦下載單檔安裝器及同名 SHA-256 校驗檔，放在 Ubuntu 同一個資料夾；安裝時需要網路連線與管理員授權。
+
+發行檔與文件：
 
 - [單檔安裝器](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run)
-- [安裝器 SHA-256](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run.sha256)
-- [完整 tar.gz 套件](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz)
-- [tar.gz SHA-256](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz.sha256)
-- [軟體功能總覽與 GUI 使用者手冊](user_manual.html)
+- [安裝器 SHA-256 校驗檔](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run.sha256)
+- [完整 tar.gz 套件](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz)（替代安裝方式）
+- [tar.gz SHA-256 校驗檔](wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz.sha256)
+- [完整安裝指南](install.md)
+- [宇集-多機器人管理系統功能總覽與 GUI 操作](user_manual.html)
 
-核心套件為授權發行的預編譯二進位；此處提供安裝包，不公開核心原始碼。
+### 快速安裝（桌面版）
+
+先從本 repo 下載安裝器與校驗檔至 ~/Downloads/wmrSim，再於 Ubuntu Terminal 執行：
+
+~~~bash
+cd ~/Downloads/wmrSim
+sha256sum -c wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run.sha256
+chmod u+x wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run
+sudo ./wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run --profile desktop --yes
+wmrsim doctor
+wmrsim start
+~~~
+
+校驗結果必須是 OK 才繼續。安裝完成後請以一般使用者執行 wmrsim，不要加 sudo。Dashboard 位於 [http://127.0.0.1:8080/](http://127.0.0.1:8080/)。無桌面伺服器可安裝 base profile，並以 headless 模式啟動。
+
+### tar.gz 替代安裝
+
+~~~bash
+cd ~/Downloads/wmrSim
+sha256sum -c wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz.sha256
+mkdir -p ~/Downloads/wmrSim-bundle
+tar -xzf wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.tar.gz -C ~/Downloads/wmrSim-bundle
+cd ~/Downloads/wmrSim-bundle/wmr_sim_commercial_v1.0.0
+sudo bash ./install.sh --profile desktop --yes
+wmrsim doctor
+wmrsim start
+~~~
+
+核心套件為授權發行的預編譯二進位；此處提供安裝包，不公開核心原始碼。第一次安裝前請閱讀安裝指南的系統需求與故障排除。
 
 ---
 
@@ -51,7 +82,9 @@ from wmr_sim.sdk import (
 
 ---
 
-## 安裝
+## Plugin SDK 安裝
+
+以下步驟只用於外掛 SDK 開發，不是 wmrSim 模擬器的一般使用者安裝方式。
 
 ```bash
 cd sdk
@@ -153,7 +186,8 @@ ros2 run wmr_sim viz --robots wmr_0,wmr_1
 
 | 文件 | 內容 |
 |---|---|
-| [`manuals/install_ubuntu24.md`](manuals/install_ubuntu24.md) | Ubuntu 24.04 本地下載、安裝與驗證指南 |
+| [install.md](install.md) | Ubuntu 24.04 amd64 發行包下載、校驗、一鍵安裝與啟動指南 |
+| [user_manual.html](user_manual.html) | 軟體功能總覽與 GUI 操作手冊 |
 | [`manuals/PLUGIN_AUTHORING_GUIDE.md`](manuals/PLUGIN_AUTHORING_GUIDE.md) | 介面契約、信任邊界、Manifest、註冊、驗證、除錯 |
 | [`manuals/EXAMPLES_GUIDE.md`](manuals/EXAMPLES_GUIDE.md) | 三個範例逐段解析與端到端練習 |
 | [`manuals/OPERATION_MANUAL.md`](manuals/OPERATION_MANUAL.md) | 操作說明書：安裝、GUI 環境設定與啟動、遠端 X11、API |
