@@ -273,6 +273,21 @@ source /opt/ros/jazzy/setup.bash
 cd ~/my_ws && colcon build --symlink-install
 ```
 
+### 重新產生第三方原始碼包（維護者）
+
+原始碼包內附的 `install.sh` 已納入版控於 `packaging/third_party/install.sh`
+（僅使用 `set -eo pipefail`，並在 source ROS setup 前後處理 `set -u` ——
+ROS 2 Jazzy 的 setup 腳本不相容 `set -u`）。
+
+```bash
+# 由私有開發庫的 src/ 重新組包（預設來源 ../wmrSim/src）
+bash tools/pack_third_party_bundle.sh --src ../wmrSim/src
+
+# 發布／替換 GitHub Release 資產
+gh release upload v1.0.0 dist/wmr_sim_third_party_v1.0.0.tar.gz \
+    dist/wmr_sim_third_party_v1.0.0.tar.gz.sha256 --clobber
+```
+
 > **授權合規**：第三方套件的著作權聲明與授權條款已完整保留，
 > 並保存於 `~/my_ws/third_party_LICENSES/`。
 > 完整來源、精確版本與在地補丁清單見 [`THIRD_PARTY.md`](THIRD_PARTY.md)。
