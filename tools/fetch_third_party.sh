@@ -112,14 +112,18 @@ do_check() {
         log "  ${WS_DIR}/src 不存在（尚未建立工作區）"
     fi
 
-    echo "[CHK] 已安裝的 teb / costmap_converter"
+    echo "[CHK] 核心必要相依（teb_local_planner / costmap_converter）"
+    log "  註：核心以 <exec_depend> 宣告 teb_local_planner，且 wmrsim doctor 會強制檢查；"
+    log "      這兩者不在 ROS 官方 apt 內，必須以 --bundle 或 --upstream 取得後建置。"
     for p in teb_local_planner costmap_converter; do
-        if ldconfig -p 2>/dev/null | grep -qi "${p}"; then
-            log "  ${p}: 系統函式庫 [OK]"
-        elif [ -d "/opt/ros/jazzy/share/${p}" ]; then
-            log "  ${p}: /opt/ros/jazzy/share [OK]"
+        if [ -d "/opt/ros/jazzy/share/${p}" ] || ldconfig -p 2>/dev/null | grep -qi "${p}"; then
+            log "  ${p}: 已安裝 [OK]"
+        elif [ -d "${WS_DIR}/src/${p}" ]; then
+            log "  ${p}: 原始碼已就緒，但尚未建置／載入"
+            log "       → cd ${WS_DIR} && colcon build --symlink-install"
+            log "       → source ${WS_DIR}/install/setup.bash"
         else
-            log "  ${p}: 未偵測到（需以 --bundle 或 --upstream 取得）"
+            warn "  ${p}: 缺少（核心必要）→ bash tools/fetch_third_party.sh --bundle --ws ${WS_DIR}"
         fi
     done
 }
@@ -171,12 +175,27 @@ do_bundle() {
 
     cat << EOF
 
-下一步：
-  source /opt/ros/jazzy/setup.bash
-  cd ${WS_DIR} && colcon build --symlink-install \\
-      --packages-select costmap_converter_msgs costmap_converter \\
-                        teb_msgs teb_local_planner \\
-                        dwb_core dwb_critics dwb_plugins
+下一步（--bundle 只下載原始碼，不含系統相依、也不建置）：
+
+  1) 系統相依（teb 需要 g2o / suitesparse；缺少時 colcon build 會失敗）
+     sudo apt-get install -y libg2o-dev libsuitesparse-dev libopencv-dev libboost-all-dev \\
+         ros-jazzy-nav2-core ros-jazzy-nav2-costmap-2d ros-jazzy-nav2-util ros-jazzy-nav2-msgs \\
+         ros-jazzy-cv-bridge ros-jazzy-eigen3-cmake-module ros-jazzy-tf2-eigen \\
+         ros-jazzy-pluginlib ros-jazzy-visualization-msgs build-essential cmake
+
+  2) 建置
+     source /opt/ros/jazzy/setup.bash
+     cd ${WS_DIR} && colcon build --symlink-install \\
+         --packages-select costmap_converter_msgs costmap_converter \\
+                           teb_msgs teb_local_planner \\
+                           dwb_core dwb_critics dwb_plugins
+
+  3) 載入（核心 exec_depend 需要，wmrsim doctor 亦會檢查）
+     source ${WS_DIR}/install/setup.bash
+     ros2 pkg prefix teb_local_planner
+
+  提示：官方第三方發行包 wmr_sim_third_party_v1.0.0.tar.gz 內含 install.sh，
+        可一次完成上面 1~3 步（bash install.sh，預設建置到 ~/wmr_sim_third_party_ws）。
 EOF
 }
 

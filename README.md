@@ -229,7 +229,13 @@ print(PluginVerifier.verify_global_planner(MyPlanner()).status.value)  # VALID
 ## 第三方元件（一鍵取得）
 
 wmrSim 在 Ubuntu 24.04 / ROS 2 Jazzy 上使用下列**第三方套件**。
-這些**不是**宇集創新科技的著作，依其原始授權散布：
+這些**不是**宇集創新科技的著作，依其原始授權散布。
+
+> ⚠️ **這是核心的必要相依，不是選用**：核心以 `<exec_depend>` 宣告 `teb_local_planner`，
+> 並在 `plugin_registry` 註冊；`wmrsim doctor` 會強制檢查 `teb_local_planner` 與
+> `costmap_converter`。兩者**不在 ROS 官方 apt 內**，未完成本節時 `wmrsim doctor`
+> 會失敗於「ROS 2 找不到執行相依套件：teb_local_planner」。
+> 完整安裝步驟（含系統相依與建置）見 [install.md §4.1](install.md)。
 
 | 套件 | 授權 | 取得方式 |
 |---|---|---|

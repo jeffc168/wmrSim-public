@@ -43,11 +43,66 @@ sudo ./wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run --profile desktop --yes
 
 ## 4. 確認安裝並啟動
 
+> ⚠️ **先完成 §4.1**：核心執行相依 `teb_local_planner` 與 `costmap_converter` **不在 ROS 官方 apt 內**，
+> 發行包也未附帶。未先取得時，`wmrsim doctor` 會失敗於「ROS 2 找不到執行相依套件：teb_local_planner」。
+
 先執行診斷：
 
 ```bash
 wmrsim doctor
 ```
+
+### 4.1 取得第三方導航相依（必要）
+
+核心以 `<exec_depend>` 宣告 `teb_local_planner`，並在 `plugin_registry` 註冊
+`teb_local_planner:TebLocalPlanner`；`wmrsim doctor` 會強制檢查 `teb_local_planner`
+與 `costmap_converter` 能否被 `ros2 pkg prefix` 解析。
+這兩者**未收錄於 ROS 官方 apt，發行包也未附帶**，必須自行取得並建置
+（BSD-3-Clause / Apache-2.0，非宇集創新科技著作）。
+
+需要這 7 個套件：`costmap_converter_msgs`、`costmap_converter`、`teb_msgs`、
+`teb_local_planner`、`dwb_core`、`dwb_critics`、`dwb_plugins`。
+
+**方式 A：使用第三方發行包內建的安裝腳本（最快，含系統相依與建置）**
+
+```bash
+mkdir -p ~/Downloads/wmrSim && cd ~/Downloads/wmrSim
+curl -fLO https://github.com/jeffc168/wmrSim-public/releases/download/v1.0.0/wmr_sim_third_party_v1.0.0.tar.gz
+mkdir -p ~/wmr_sim_third_party && tar -xzf wmr_sim_third_party_v1.0.0.tar.gz -C ~/wmr_sim_third_party
+cd ~/wmr_sim_third_party/wmr_sim_third_party_v1.0.0
+bash install.sh                  # apt 安裝系統相依 → colcon build 至 ~/wmr_sim_third_party_ws
+source ~/wmr_sim_third_party_ws/install/setup.bash
+```
+
+**方式 B：使用本 repo 的取得工具（只下載原始碼；需自行安裝系統相依並建置）**
+
+```bash
+bash tools/fetch_third_party.sh --bundle --ws ~/wmr_sim_third_party_ws
+
+sudo apt-get install -y libg2o-dev libsuitesparse-dev libopencv-dev libboost-all-dev ros-jazzy-nav2-core ros-jazzy-nav2-costmap-2d ros-jazzy-nav2-util ros-jazzy-nav2-msgs ros-jazzy-cv-bridge ros-jazzy-eigen3-cmake-module ros-jazzy-tf2-eigen ros-jazzy-pluginlib ros-jazzy-visualization-msgs build-essential cmake
+
+source /opt/ros/jazzy/setup.bash
+cd ~/wmr_sim_third_party_ws && colcon build --symlink-install --packages-select costmap_converter_msgs costmap_converter teb_msgs teb_local_planner dwb_core dwb_critics dwb_plugins
+source ~/wmr_sim_third_party_ws/install/setup.bash
+```
+
+完成後在**同一個已 `source` 的終端機**內再確認：
+
+```bash
+bash tools/fetch_third_party.sh --check --ws ~/wmr_sim_third_party_ws
+ros2 pkg prefix teb_local_planner     # 應印出安裝路徑
+wmrsim doctor                         # 應全部 PASS
+```
+
+> **讓 `wmrsim start` 不必每次手動 `source`**：`wmrsim doctor` 會自動 source
+> `/opt/wmr_sim/overlay/local_setup.bash`，可將建置結果放到該 overlay。
+
+```bash
+sudo mkdir -p /opt/wmr_sim/overlay
+sudo cp -r ~/wmr_sim_third_party_ws/install/. /opt/wmr_sim/overlay/
+```
+
+（或每次啟動 wmrSim 前先 `source ~/wmr_sim_third_party_ws/install/setup.bash`。）
 
 所有必要項目通過後，啟動模擬與 Dashboard：
 
