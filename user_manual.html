@@ -53,6 +53,7 @@ footer{max-width:1120px;margin:-50px auto 36px;padding:0 20px;color:var(--muted)
 <tr><td>導航任務</td><td>在地圖選取機器人、加入目標點、選擇 P2P、DWA 或 TEB，然後派送任務。</td><td>Dashboard 地圖調度、桌面 GUI</td></tr>
 <tr><td>感測顯示</td><td>查看地圖、LiDAR、Point Cloud 與可用的相機資訊。</td><td>桌面 GUI、Dashboard 總覽</td></tr>
 <tr><td>交通與電梯</td><td>觀察交通資源／保留狀態、樓宇設施及電梯協調狀態。</td><td>Dashboard、桌面電梯面板</td></tr>
+<tr><td>3D 檢視</td><td>以 3D 場景檢視場域、機器人（A100 數位分身模型）與電梯（全景模型），並顯示路徑、交通與電梯圖層。</td><td>桌面 GUI、Dashboard 地圖頁</td></tr>
 <tr><td>任務與診斷</td><td>查看任務事件、車隊指標、Gateway 連線及服務能力。</td><td>Dashboard</td></tr>
 </tbody></table>
 <div class="callout">Dashboard 的命令與資料頁面會依 Gateway 是否提供相應 API、目前使用者權限及後端服務狀態而顯示。若某項能力不可用，請先查看「系統設定」中的連線與能力資訊。</div>
@@ -62,7 +63,8 @@ footer{max-width:1120px;margin:-50px auto 36px;padding:0 20px;color:var(--muted)
 <p>Ubuntu 24.04 安裝完成後，以一般登入帳號開啟 Terminal：</p>
 <pre><code>wmrsim doctor
 wmrsim start</code></pre>
-<p><code>wmrsim doctor</code> 檢查 ROS 2、核心套件、Dashboard 與 SDK；<code>wmrsim start</code> 啟動模擬、Gateway 和桌面 GUI，並嘗試開啟瀏覽器。Dashboard 預設網址是 <a href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a>。</p>
+<p><code>wmrsim doctor</code> 檢查 ROS 2、核心套件、<strong>第三方導航相依（<code>teb_local_planner</code>、<code>costmap_converter</code>、<code>dwb_plugins</code>）</strong>、Dashboard、CLI 與 SDK；<code>wmrsim start</code> 啟動模擬、Gateway 和桌面 GUI，並嘗試開啟瀏覽器。Dashboard 預設網址是 <a href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a>。</p>
+<p>若診斷回報「缺少第三方導航相依」（<strong>退出碼 3</strong>），代表安裝時第三方套件未建置完成；請依安裝指南 <code>install.md</code> 的「4.1 取得第三方導航相依（必要）」補做，再重新執行 <code>wmrsim doctor</code>。</p>
 <p>沒有桌面環境的主機使用 <code>wmrsim start --headless</code>，之後從有權限的瀏覽器連到該主機所設定的 Gateway 位址。不要以 <code>sudo wmrsim start</code> 啟動 GUI。</p>
 <p>若 Gateway 啟用登入，使用管理者提供的帳號登入。Dashboard 顯示「Offline」或連線錯誤時，先確認模擬與 Gateway 已啟動，再到「系統設定」檢查 Gateway URL、連線狀態及 API 能力。</p>
 </section>
@@ -105,6 +107,10 @@ wmrsim start</code></pre>
 <li>到「任務中心」查看任務狀態及事件；到「機器人」查看車輛連線與位置。</li>
 </ol>
 <div class="callout">派送前請確認目標點位於正確樓層與可通行區域。模擬環境畫面上的路徑不代表真實設備已完成動作。</div>
+<h3>4.2 地圖 3D 檢視</h3>
+<p>Dashboard 的地圖頁以 <strong>Three.js 3D 場景</strong>呈現場域（資料經 Integration Gateway 的 REST／SSE 取得，前端不直接相依 ROS 2 或 DDS）。場景包含地圖（佔用柵格／網格）、路徑、機器人、交通標記與電梯等 3D 圖層；機器人以 <strong>AMR A100 實體 CAD 數位分身模型</strong>顯示，電梯使用<strong>全景 3D 模型</strong>。</p>
+<p>可切換 2D／3D 檢視、縮放與旋轉視角，也可將視角對應到完整地圖範圍。手機或平板（視窗寬度 ≤ 768px）會進入<strong>全螢幕 3D 視埠</strong>，並以半透明 HUD 疊層提供選取機器人、編輯目標點與派送等操作；較寬視窗則以側邊面板搭配 3D 視埠。</p>
+<p>若 3D 模型資產未載入成功（例如路徑不正確或瀏覽器不支援 WebGL），系統會退回程序化 2D／3D 顯示，其餘功能不受影響。</p>
 </section>
 <section id="pages">
 <h2>5. Dashboard 頁面說明</h2>
@@ -135,6 +141,6 @@ wmrsim start</code></pre>
 </section>
 </article>
 </main>
-<footer>wmrSim 使用者操作文件 · 依此版本提供的桌面 GUI 與 Dashboard 編寫。實際可用功能依安裝版本、Gateway API、場景設定及使用者權限而異。</footer>
+<footer>wmrSim 使用者操作文件（對應 wmrSim 1.0.0 / Release Build 1.0.0）· 依此版本提供的桌面 GUI 與 Dashboard 編寫。實際可用功能依安裝版本、Gateway API、場景設定及使用者權限而異。</footer>
 </body>
 </html>

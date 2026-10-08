@@ -40,7 +40,14 @@ chmod u+x wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run
 sudo ./wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run --profile desktop --yes
 ```
 
-輸入 Ubuntu 使用者密碼後，等待 apt 安裝完成。過程需要網路連線；安裝器會檢查 Ubuntu 版本及 amd64 架構，安裝 ROS 2 Jazzy、Nav2、wmrSim 核心與 SDK，最後執行安裝診斷。請等候看到「安裝完成」訊息；任何錯誤都代表流程尚未完成。
+輸入 Ubuntu 使用者密碼後，等待 apt 安裝完成。過程需要網路連線；安裝器會檢查 Ubuntu 版本及 amd64 架構，然後依序：
+
+1. 安裝 ROS 2 Jazzy 與 Nav2（依 `--profile` 為 desktop 或 base）；
+2. 安裝 wmrSim 核心 `.deb` 與外掛 SDK wheel；
+3. **以發行包內附的第三方原始碼包建置導航相依**（`teb_local_planner`、`costmap_converter`、`dwb_*`；包含 apt 系統相依與 `colcon build`，通常需要數分鐘），並把建置結果佈署到 `/opt/wmr_sim/overlay`；
+4. 執行安裝診斷（`wmrsim doctor`）。
+
+請等候看到「安裝完成」訊息；任何錯誤都代表流程尚未完成。第 3 步是核心的必要相依（見 §4.1）；若該步未完成，`wmrsim doctor` 會以**退出碼 3** 結束並印出修復指引。
 
 > 請以一般登入使用者啟動 wmrSim，不要使用 `sudo wmrsim`。
 
@@ -62,19 +69,36 @@ wmrsim doctor
 這兩者**不在 ROS 官方 apt 內，也不在核心 .deb 內**，必須另外取得並建置
 （BSD-3-Clause / Apache-2.0，非宇集創新科技著作）。
 
-安裝器（`install.sh` / `.run`）會自動執行下列步驟並佈署到 `/opt/wmr_sim/overlay`；
-若需手動補做，方式如下：
+安裝器（`install.sh` / `.run`）會自動執行下列步驟，並把建置結果佈署到 `/opt/wmr_sim/overlay`。
+若安裝中斷、或診斷顯示「缺少第三方導航相依」，請依你的安裝方式補做：
+
+**方式一：`tar.gz` 發行包（發行樹仍在）**
 
 ```bash
-# 由發行包內附的第三方套件包（或線上）建置並佈署 overlay
-sudo bash scripts/install_third_party.sh --release-root "$PWD" --offline   # 發行包內 third_party/ 有提供時
-sudo bash scripts/install_third_party.sh --release-root "$PWD"             # 允許線上取得時
+cd ~/Downloads/wmrSim-bundle/wmr_sim_commercial_v1.0.0
+sudo bash scripts/install_third_party.sh --release-root "$PWD" --offline   # 使用包內 third_party/ 原始碼包
+sudo bash scripts/install_third_party.sh --release-root "$PWD"             # 允許由網路取得時
 
 # 驗收
 wmrsim doctor                     # 應全部 PASS
 ```
 
-也可以改用公開 SDK repo 的工具手動完成：
+**方式二：`.run` 單檔安裝器（發行樹為暫存目錄，安裝後已刪除）**
+
+`.run` 會把內容解壓到暫存目錄、安裝完成後刪除，因此事後無法再執行 `scripts/install_third_party.sh`。請擇一：
+
+```bash
+# A. 重新執行安裝器（會重跑第三方建置）
+sudo ./wmr_sim_commercial_v1.0.0_ubuntu24.04_amd64.run --profile desktop --yes
+
+# B. 另外下載 tar.gz 發行包並解開，改採「方式一」
+
+# C. 改用「方式三」的公開 SDK repo 步驟
+```
+
+**方式三：公開 SDK repo 的手動步驟（不需發行包）**
+
+若沒有發行包，可改用公開 SDK repo 隨附工具自行建置：
 
 ```bash
 bash tools/fetch_third_party.sh --bundle --ws ~/wmr_sim_third_party_ws
@@ -127,6 +151,9 @@ sudo bash ./install.sh --profile desktop --yes
 - **ROS/apt 下載失敗**：確認主機可連上 Ubuntu 與 ROS 官方套件來源，並確認公司代理或防火牆允許 apt/HTTPS 流量，再重新執行安裝器。
 - **apt 提示鎖定中**：等待 Ubuntu 更新程式或其他 apt 工作完成後再重試；不要手動刪除 apt lock 檔。
 - **診斷失敗**：保留終端機完整錯誤輸出，並執行 `wmrsim doctor`；不要把安裝失敗視為已完成。
+- **診斷顯示「缺少第三方導航相依」（退出碼 3）**：安裝流程的第三方建置未完成或曾中斷。請依 **§4.1** 補做（`.run` 安裝請重新執行安裝器或改用 tar.gz 發行包），再重新執行 `wmrsim doctor`。
+- **第三方建置失敗（`colcon build` 錯誤）**：最常見原因是系統相依未裝齊（`libg2o-dev`、`libsuitesparse-dev`、`libopencv-dev`、`libboost-all-dev`）或網路中斷。確認網路與 ROS/Ubuntu 套件來源後重試；安裝器會印出缺少的套件。
+- **離線安裝找不到第三方原始碼包**：離線安裝要求發行包內含 `third_party/wmr_sim_third_party_v*.tar.gz`；若企業流程裁剪發行包而移除該目錄，請改用線上安裝或使用未裁剪的原始發行包。
 
 ## 7. 使用手冊
 

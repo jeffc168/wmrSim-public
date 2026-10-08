@@ -21,8 +21,10 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "$0")")" && pwd)"
 ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
-VERSION="$(tr -d '[:space:]' < "${ROOT}/VERSION" 2>/dev/null || true)"
-[ -n "${VERSION}" ] || VERSION="1.0.0"
+VERSION="1.0.0"
+if [ -f "${ROOT}/VERSION" ]; then
+    VERSION="$(tr -d '[:space:]' < "${ROOT}/VERSION")"
+fi
 SRC_DIR="${WMR_THIRD_PARTY_SRC_DIR:-$(cd -- "${ROOT}/.." && pwd)/wmrSim/src}"
 OUT_DIR="${ROOT}/dist"
 
@@ -76,7 +78,10 @@ find "${STAGE}/${BUNDLE_NAME}" -name '.git' -prune -exec rm -rf {} + 2>/dev/null
 find "${STAGE}/${BUNDLE_NAME}" -name '__pycache__' -prune -exec rm -rf {} + 2>/dev/null || true
 
 mkdir -p "${OUT_DIR}"
-( cd "${STAGE}" && tar -czf "${OUT_DIR}/${BUNDLE_NAME}.tar.gz" "${BUNDLE_NAME}" )
+# 決定性打包：固定排序／mtime／owner，gzip 不寫入名稱與時間 →
+# 相同輸入永遠得到相同 sha256（Release 資產與發行包內嵌副本才會一致）
+( cd "${STAGE}" && tar --sort=name --mtime='UTC 2026-01-01' --owner=0 --group=0 --numeric-owner \
+    -cf - "${BUNDLE_NAME}" | gzip -9n > "${OUT_DIR}/${BUNDLE_NAME}.tar.gz" )
 ( cd "${OUT_DIR}" && sha256sum "${BUNDLE_NAME}.tar.gz" > "${BUNDLE_NAME}.tar.gz.sha256" )
 
 echo
